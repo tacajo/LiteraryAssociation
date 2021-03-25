@@ -1,0 +1,38 @@
+h3 {
+    font-weight: bold;
+    color:white;
+    font-size: 30px;
+    text-align: center;
+    filter:drop-shadow(5px 4px 2px#212121);
+}
+h4 {
+    font-weight: bold;
+    color:white;
+    font-size: 25px;
+    text-align: center; 
+    filter:drop-shadow(5px 4px 2px#212121);
+}
+.container {
+    margin-left: 50px;
+    margin-top: 30px;
+    background: rgb(105, 105, 105, 0.4);
+}
+button {
+    margin: 20px;
+}
+
+label {
+    font-size: 20px;
+    color: white;
+}
+
+input[type="file"] {
+    font-family: 'Varela Round', sans-serif;
+    padding: 10px;
+    margin: 5px;
+}
+input #file-upload-button {
+    font-family: 'Varela Round', sans-serif;
+    padding: 10px;
+    margin: 5px;
+}

@@ -1,0 +1,12 @@
+<div class="container">
+    <h3>CONGRATULATION</h3>
+
+    <h4>Your account has been activated and email is verified!</h4>
+    <a  mat-raised-button color="accent" href="http://localhost:4200" >Back to login</a>
+    <form *ngIf="false">
+        <label for="files">Select files:</label>
+        <br/>
+        <input style="color: white;"  type="file" id="pdfs" name="files" (change)="selectFiles($event)" multiple><br><br>
+        <button mat-raised-button type="submit" (click)="savePdfs()"><strong>submit</strong></button>
+    </form>
+</div>

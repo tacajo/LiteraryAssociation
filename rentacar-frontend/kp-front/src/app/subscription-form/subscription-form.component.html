@@ -1,0 +1,63 @@
+<div class="bgImage">
+    <div class="testbox">
+        <form>
+            <hr>
+            <div class="accounttype" align="center" *ngIf="firstform">
+                <h3 align="center" style="margin-top: 30px;font-family: 'Varela Round', sans-serif;">Please input data
+                    for membership:</h3>
+                <div class="accounttype">
+                    <div class="input-group">
+                        <label for="name">First name:</label>
+                        <input matInput type="text" id="firstName" name="firstName" class="inputSubscription"
+                            [(ngModel)]="subscriber.firstName" />
+                    </div>
+                    <div class="input-group">
+                        <label class="labelSub" for="name">Last name</label>
+                        <input matInput  id="lastName" name="lastName"
+                        [(ngModel)]="subscriber.lastName">
+                    </div>
+                    <div class="form-group">
+                        <label class="labelSub" for="name">Email address</label>
+                        <input matInput   id="email" name="email" [(ngModel)]="subscriber.email">
+                    </div>
+                </div>
+            
+                <a (click)="continue()" class="button">Continue</a>
+            </div>
+
+            <div class="accounttype" align="center" *ngIf='secondform'>
+                <input type="radio" value="gY" id="radioOne" name="membership" [(ngModel)]="checked" />
+                <label for="radioOne" class="radio">Gold membership - one year</label>
+                <input type="radio" value="gM" id="radioTwo" name="membership" [(ngModel)]="checked" />
+                <label for="radioTwo" class="radio">Gold membership - one year (pay in 12 parts)</label>
+                <input type="radio" value="rY" id="radioThree" name="membership" [(ngModel)]="checked" />
+                <label for="radioThree" class="radio">Regular membership - one year</label>
+                <input type="radio" value="rM" id="radioThree" name="membership" [(ngModel)]="checked" />
+                <label for="radioThree" class="radio">Regular membership - one year (pay in 12 parts)</label>
+                <hr>
+                <a (click)="continueToSubscription()" class="button">Continue</a>
+            </div>
+
+        </form>
+
+        <mat-tab-group style="align-items: center;" mat-align-tabs="start" *ngIf='login'>
+            <mat-tab label="Confirm your credentials">
+                <form>
+                    <hr>
+                    <div class="accounttype">
+                        <label id="icon" for="name"><i class="icon-user"></i></label>
+                        <input matInput type="text" name="username" placeholder="username"
+                            [(ngModel)]='user.username' />
+                        <label id="icon" for="name"><i class="icon-shield"></i></label>
+                        <input matInput type="password" id="password" name="password" [(ngModel)]='user.password'
+                            placeholder="password" />
+
+                    </div>
+                    <hr>
+                    <a (click)="confirm()" class="button">Confirm</a>
+                </form>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+
+</div>

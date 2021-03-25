@@ -1,0 +1,51 @@
+.testbox {
+    margin: 20px auto;
+    width: 450px; 
+    -webkit-border-radius: 8px/7px; 
+    -moz-border-radius: 8px/7px; 
+    border-radius: 8px/7px; background: rgba(255,255,255,0.9);
+    -webkit-box-shadow: 1px 2px 5px rgba(0,0,0,.31); 
+    -moz-box-shadow: 1px 2px 5px rgba(0,0,0,.31); 
+    box-shadow: 1px 2px 5px rgba(0,0,0,.31); 
+    border: solid 1px #cbc9c9;
+  }
+  *, p, h1, h2, h3, h4, h5, h6, span, small, label {
+    font-family: 'Varela Round', sans-serif;
+    font-size: 14px;
+    color: #4c4c4c;
+  }
+  
+  body,
+  textarea,
+  select {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    color: #4c4c4c;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+
+  .formPublish{
+    margin: 25px;
+  }
+  
+  
+  :focus {outline:none}
+  .accounttype {
+    margin-top: 20px;
+  }
+  
+  
+  #radioOne {
+    margin-right: 20px;
+  }
+  
+  button {
+    margin: 20px 0;
+  }
+  
+  .mat-tab label {
+    font-size: 16px;
+  }

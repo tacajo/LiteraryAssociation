@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_06dwuvr" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="utvrdjivanje_plagijarizma" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0c2doq8</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0c2doq8" sourceRef="StartEvent_1" targetRef="ulaganje_zalbe" />
+    <bpmn:userTask id="ulaganje_zalbe" name="Ulaganje zalbe na plagijarizam">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="ime_pisca" label="Wirter&#39;s first name" type="string" />
+          <camunda:formField id="prezime_pisca" label="Writer&#39;s surname" type="string" />
+          <camunda:formField id="naziv_knjige" label="Book name" type="string" />
+          <camunda:formField id="naziv_original_knjige" label="Original book name" type="string" />
+          <camunda:formField id="ime_pisca_original_knjige" label="Original book writer&#39;s first name" type="string" />
+          <camunda:formField id="prezime_pisca_original_knjige" label="Original book writer&#39;s surname" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0c2doq8</bpmn:incoming>
+      <bpmn:incoming>losi_podaci</bpmn:incoming>
+      <bpmn:outgoing>Flow_03io0mg</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_03io0mg" sourceRef="ulaganje_zalbe" targetRef="Activity_1qtfcol" />
+    <bpmn:sequenceFlow id="Flow_0axhx7r" sourceRef="SendNotificationToEditor" targetRef="urednik_bira_urednika" />
+    <bpmn:sequenceFlow id="Flow_0tmbgam" sourceRef="urednik_bira_urednika" targetRef="Activity_0i12c82" />
+    <bpmn:userTask id="urednik_bira_urednika" name="Glavni urednik bira urednike za provjeru">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="editors" label="Editors" type="enum" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0axhx7r</bpmn:incoming>
+      <bpmn:incoming>Flow_1tvd49a</bpmn:incoming>
+      <bpmn:outgoing>Flow_0tmbgam</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="SendNotificationToEditor" name="Slanje notifikacije uredniku" camunda:class="com.LiteraryAssociation.handler.SendNotificationAboutPlagiarism">
+      <bpmn:incoming>Flow_1xh6cv4</bpmn:incoming>
+      <bpmn:incoming>Flow_0fikfq3</bpmn:incoming>
+      <bpmn:outgoing>Flow_0axhx7r</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:boundaryEvent id="Event_02koowl" attachedToRef="Activity_1qtfcol">
+      <bpmn:outgoing>losi_podaci</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_13hz0nh" errorRef="Error_0gg54a0" />
+    </bpmn:boundaryEvent>
+    <bpmn:sendTask id="Activity_0i12c82" name="Urednici dobijaju notifikacije" camunda:class="com.LiteraryAssociation.handler.NotifyEditors">
+      <bpmn:incoming>Flow_0tmbgam</bpmn:incoming>
+      <bpmn:outgoing>Flow_1whg3vq</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:subProcess id="Activity_15h8lt4" name="Clanovi odbora daju svoje misljenje">
+      <bpmn:incoming>Flow_0ezvpzg</bpmn:incoming>
+      <bpmn:outgoing>Flow_0bznyam</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics camunda:collection="${committeeMembers}" camunda:elementVariable="committeeMember" />
+      <bpmn:startEvent id="Event_11ricux">
+        <bpmn:outgoing>Flow_0kk7dcz</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="Event_1c8opnb">
+        <bpmn:incoming>Flow_1w8p1zy</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:userTask id="Activity_11f8lcj" name="Dodavanje misljenja" camunda:assignee="${committeeMember}">
+        <bpmn:extensionElements>
+          <camunda:formData>
+            <camunda:formField id="opinionCm" label="Is this book plagiarism?" type="boolean" />
+          </camunda:formData>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0kk7dcz</bpmn:incoming>
+        <bpmn:outgoing>Flow_1mkq4sj</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="Activity_0dqnbo8" name="Belezenje misljenja " camunda:class="com.LiteraryAssociation.handler.CommitteeMemberAddOpinion">
+        <bpmn:incoming>Flow_1mkq4sj</bpmn:incoming>
+        <bpmn:outgoing>Flow_1w8p1zy</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1w8p1zy" sourceRef="Activity_0dqnbo8" targetRef="Event_1c8opnb" />
+      <bpmn:sequenceFlow id="Flow_1mkq4sj" sourceRef="Activity_11f8lcj" targetRef="Activity_0dqnbo8" />
+      <bpmn:sequenceFlow id="Flow_0kk7dcz" sourceRef="Event_11ricux" targetRef="Activity_11f8lcj" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_0bznyam" sourceRef="Activity_15h8lt4" targetRef="Activity_1t2ivhv" />
+    <bpmn:exclusiveGateway id="Gateway_107k1h3" default="Flow_0f3da2u">
+      <bpmn:incoming>Flow_0ekbrjg</bpmn:incoming>
+      <bpmn:outgoing>Flow_0f3da2u</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0flmver</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0ekbrjg" sourceRef="Activity_1t2ivhv" targetRef="Gateway_107k1h3" />
+    <bpmn:serviceTask id="Activity_1t2ivhv" name="Uporedi sve biljeske" camunda:class="com.LiteraryAssociation.handler.PlagiarismVotes">
+      <bpmn:incoming>Flow_0bznyam</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ekbrjg</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_1ecy053">
+      <bpmn:incoming>Flow_01ezm5m</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1g1123z" />
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_1qtfcol" name="Validacija unetih podataka" camunda:class="com.LiteraryAssociation.handler.SavePlagiarismInfo">
+      <bpmn:incoming>Flow_03io0mg</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xh6cv4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="losi_podaci" name="nisu dobro uneti podaci" sourceRef="Event_02koowl" targetRef="ulaganje_zalbe" />
+    <bpmn:endEvent id="Event_0nd2mxx">
+      <bpmn:incoming>Flow_04g2sfv</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0f3da2u" sourceRef="Gateway_107k1h3" targetRef="Event_13dyqkr" />
+    <bpmn:sequenceFlow id="Flow_1tvd49a" name="Bira se zamena " sourceRef="Event_1xux449" targetRef="urednik_bira_urednika" />
+    <bpmn:sequenceFlow id="Flow_01ezm5m" sourceRef="Event_1ohbv3m" targetRef="Event_1ecy053" />
+    <bpmn:sequenceFlow id="Flow_1whg3vq" sourceRef="Activity_0i12c82" targetRef="Activity_1qv3ry8" />
+    <bpmn:boundaryEvent id="Event_1xux449" name="14 dana" attachedToRef="Activity_1qv3ry8">
+      <bpmn:outgoing>Flow_1tvd49a</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1vb3a9g">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P14D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Event_1ohbv3m" attachedToRef="Activity_1qv3ry8">
+      <bpmn:outgoing>Flow_01ezm5m</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1iq5gmv" errorRef="Error_1m68ggo" />
+    </bpmn:boundaryEvent>
+    <bpmn:subProcess id="Activity_1qv3ry8" name="Urednici skidaju knjige i daju beleske">
+      <bpmn:incoming>Flow_1whg3vq</bpmn:incoming>
+      <bpmn:outgoing>Flow_0nf1oub</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics camunda:collection="${editorsList}" camunda:elementVariable="editor" />
+      <bpmn:startEvent id="Event_0u7us39">
+        <bpmn:outgoing>Flow_0rhy9g9</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_0rhy9g9" sourceRef="Event_0u7us39" targetRef="urednik_skida_knjige" />
+      <bpmn:sequenceFlow id="Flow_15pne9x" sourceRef="urednik_skida_knjige" targetRef="urednik_salje_beleske" />
+      <bpmn:endEvent id="Event_181g8k2">
+        <bpmn:incoming>Flow_01c2uy6</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:userTask id="urednik_skida_knjige" name="Urednik skida knjige" camunda:assignee="${editor}">
+        <bpmn:extensionElements>
+          <camunda:formData>
+            <camunda:formField id="nazivKnjige" label="Title" type="string" defaultValue="${naziv_knjige}" />
+            <camunda:formField id="nazivOriginalKnjige" label="Title of original book" type="string" defaultValue="${naziv_original_knjige}" />
+            <camunda:formField id="download" label="Download" type="string" defaultValue="${naslov}">
+              <camunda:properties>
+                <camunda:property id="fieldType" value="button" />
+              </camunda:properties>
+            </camunda:formField>
+          </camunda:formData>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0rhy9g9</bpmn:incoming>
+        <bpmn:outgoing>Flow_15pne9x</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:userTask id="urednik_salje_beleske" name="Urednik salje zabiljeske o plagijarizmu" camunda:assignee="${editor}">
+        <bpmn:extensionElements>
+          <camunda:formData>
+            <camunda:formField id="notes" label="Notes" type="string" />
+          </camunda:formData>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_15pne9x</bpmn:incoming>
+        <bpmn:outgoing>Flow_106ip39</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:boundaryEvent id="Event_0isv3rm" attachedToRef="urednik_skida_knjige">
+        <bpmn:outgoing>Flow_120chb8</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="ErrorEventDefinition_0t4sfib" errorRef="Error_1ahzvtn" />
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_120chb8" sourceRef="Event_0isv3rm" targetRef="Event_0bo68hd" />
+      <bpmn:sequenceFlow id="Flow_106ip39" sourceRef="urednik_salje_beleske" targetRef="cuvanje_beleski" />
+      <bpmn:sequenceFlow id="Flow_01c2uy6" sourceRef="cuvanje_beleski" targetRef="Event_181g8k2" />
+      <bpmn:serviceTask id="cuvanje_beleski" name="Cuvanje beleski" camunda:class="com.LiteraryAssociation.handler.AddNotes">
+        <bpmn:incoming>Flow_106ip39</bpmn:incoming>
+        <bpmn:outgoing>Flow_01c2uy6</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="Event_0bo68hd">
+        <bpmn:incoming>Flow_120chb8</bpmn:incoming>
+      </bpmn:endEvent>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_04g2sfv" sourceRef="Event_13dyqkr" targetRef="Event_0nd2mxx" />
+    <bpmn:intermediateThrowEvent id="Event_13dyqkr" name="Pisac se obavestava da li je plagiarizam ili ne">
+      <bpmn:incoming>Flow_0f3da2u</bpmn:incoming>
+      <bpmn:outgoing>Flow_04g2sfv</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1nc7l49" camunda:class="com.LiteraryAssociation.handler.SendNotificationAboutPlagiarism" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_0nf1oub" sourceRef="Activity_1qv3ry8" targetRef="Activity_1ug34bw" />
+    <bpmn:sequenceFlow id="Flow_0ezvpzg" sourceRef="Activity_1ug34bw" targetRef="Activity_15h8lt4" />
+    <bpmn:serviceTask id="Activity_1ug34bw" name="Preuzimanje clanova odbora" camunda:class="com.LiteraryAssociation.handler.PrepareMultiInstance">
+      <bpmn:incoming>Flow_0nf1oub</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ezvpzg</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1xh6cv4" sourceRef="Activity_1qtfcol" targetRef="SendNotificationToEditor" />
+    <bpmn:sequenceFlow id="Flow_0fikfq3" sourceRef="korak2" targetRef="SendNotificationToEditor" />
+    <bpmn:intermediateCatchEvent id="korak2" name="Korak_2">
+      <bpmn:outgoing>Flow_0fikfq3</bpmn:outgoing>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_0tlmz54" name="Korak_2" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_0flmver" sourceRef="Gateway_107k1h3" targetRef="go_to_korak2">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${opetSeGlasa==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateThrowEvent id="go_to_korak2" name="Korak_2">
+      <bpmn:incoming>Flow_0flmver</bpmn:incoming>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_1w7sqxi" name="Korak_2" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:subProcess id="Activity_0zr8bl0" name="Ceo proces je ogranicen na 30 dana" triggeredByEvent="true">
+      <bpmn:endEvent id="Event_1ap4w73">
+        <bpmn:incoming>Flow_15rzjdh</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_15rzjdh" sourceRef="Event_1rhzn7j" targetRef="Event_1ap4w73" />
+      <bpmn:startEvent id="Event_1rhzn7j" name="30 dana">
+        <bpmn:outgoing>Flow_15rzjdh</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_0d4dpuz">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P30D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+    </bpmn:subProcess>
+    <bpmn:textAnnotation id="TextAnnotation_0xttx2d">
+      <bpmn:text>Korisnik unosi podatke o plagiranoj i original knjizi</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1dnaoi3" sourceRef="ulaganje_zalbe" targetRef="TextAnnotation_0xttx2d" />
+    <bpmn:textAnnotation id="TextAnnotation_13597ap">
+      <bpmn:text>Urednik bira minimalno dva urednika da uporede knjige</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1q68d2n" sourceRef="urednik_bira_urednika" targetRef="TextAnnotation_13597ap" />
+    <bpmn:textAnnotation id="TextAnnotation_0r7ztxr">
+      <bpmn:text>Ukoliko nisu svi jednoglasni proces se vraca na korak 2</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1m9vm40" sourceRef="Gateway_107k1h3" targetRef="TextAnnotation_0r7ztxr" />
+    <bpmn:textAnnotation id="TextAnnotation_07lkl1u">
+      <bpmn:text>Sistem utvrdjuje da li su svi jednoglasni</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1qq3aqj" sourceRef="Activity_1t2ivhv" targetRef="TextAnnotation_07lkl1u" />
+    <bpmn:textAnnotation id="TextAnnotation_112uleb">
+      <bpmn:text>Moraju knjige koje su unete da postoje u bazi</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0ufelu2" sourceRef="Activity_1qtfcol" targetRef="TextAnnotation_112uleb" />
+    <bpmn:textAnnotation id="TextAnnotation_0caqby4">
+      <bpmn:text>Odabrani urednici mogu da skinu obe knjige i u obavezi su da naprave beleske o poredjenju</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_01hwtrn" sourceRef="Activity_1qv3ry8" targetRef="TextAnnotation_0caqby4" />
+    <bpmn:textAnnotation id="TextAnnotation_1w6ljyf">
+      <bpmn:text>Svi clanovi odbora mogu da daju misljenje: da li je plagijat ili ne</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0i96nvu" sourceRef="Activity_15h8lt4" targetRef="TextAnnotation_1w6ljyf" />
+  </bpmn:process>
+  <bpmn:error id="Error_13lz11b" name="failed_payment_error" errorCode="ERROR_500" camunda:errorMessage="error_payment" />
+  <bpmn:error id="Error_0gg54a0" name="plagiarism_failed" errorCode="PLAGIARISM_ERROR" camunda:errorMessage="plagiarism_failed" />
+  <bpmn:error id="Error_1ahzvtn" name="Nema pristup za skidanje knjige" errorCode="ERROR_500" camunda:errorMessage="error" />
+  <bpmn:error id="Error_1m68ggo" name="Error_notes" errorCode="ERROR_500" camunda:errorMessage="error" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="utvrdjivanje_plagijarizma">
+      <bpmndi:BPMNEdge id="Flow_0flmver_di" bpmnElement="Flow_0flmver">
+        <di:waypoint x="2780" y="373" />
+        <di:waypoint x="2780" y="435" />
+        <di:waypoint x="2770" y="435" />
+        <di:waypoint x="2770" y="496" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fikfq3_di" bpmnElement="Flow_0fikfq3">
+        <di:waypoint x="538" y="410" />
+        <di:waypoint x="660" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xh6cv4_di" bpmnElement="Flow_1xh6cv4">
+        <di:waypoint x="490" y="254" />
+        <di:waypoint x="580" y="254" />
+        <di:waypoint x="580" y="370" />
+        <di:waypoint x="660" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ezvpzg_di" bpmnElement="Flow_0ezvpzg">
+        <di:waypoint x="1920" y="387" />
+        <di:waypoint x="1990" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nf1oub_di" bpmnElement="Flow_0nf1oub">
+        <di:waypoint x="1750" y="387" />
+        <di:waypoint x="1820" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04g2sfv_di" bpmnElement="Flow_04g2sfv">
+        <di:waypoint x="2888" y="348" />
+        <di:waypoint x="2922" y="348" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1whg3vq_di" bpmnElement="Flow_1whg3vq">
+        <di:waypoint x="1070" y="387" />
+        <di:waypoint x="1120" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01ezm5m_di" bpmnElement="Flow_01ezm5m">
+        <di:waypoint x="1570" y="252" />
+        <di:waypoint x="1570" y="180" />
+        <di:waypoint x="1714" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tvd49a_di" bpmnElement="Flow_1tvd49a">
+        <di:waypoint x="1540" y="568" />
+        <di:waypoint x="1540" y="700" />
+        <di:waypoint x="870" y="700" />
+        <di:waypoint x="870" y="427" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1161" y="673" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0f3da2u_di" bpmnElement="Flow_0f3da2u">
+        <di:waypoint x="2805" y="348" />
+        <di:waypoint x="2852" y="348" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ndvr93_di" bpmnElement="losi_podaci">
+        <di:waypoint x="460" y="312" />
+        <di:waypoint x="460" y="374" />
+        <di:waypoint x="300" y="374" />
+        <di:waypoint x="300" y="294" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="330" y="340" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ekbrjg_di" bpmnElement="Flow_0ekbrjg">
+        <di:waypoint x="2680" y="348" />
+        <di:waypoint x="2755" y="348" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bznyam_di" bpmnElement="Flow_0bznyam">
+        <di:waypoint x="2480" y="348" />
+        <di:waypoint x="2580" y="348" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0tmbgam_di" bpmnElement="Flow_0tmbgam">
+        <di:waypoint x="920" y="387" />
+        <di:waypoint x="970" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0axhx7r_di" bpmnElement="Flow_0axhx7r">
+        <di:waypoint x="760" y="387" />
+        <di:waypoint x="820" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03io0mg_di" bpmnElement="Flow_03io0mg">
+        <di:waypoint x="350" y="254" />
+        <di:waypoint x="390" y="254" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c2doq8_di" bpmnElement="Flow_0c2doq8">
+        <di:waypoint x="195" y="254" />
+        <di:waypoint x="250" y="254" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="159" y="236" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_14gt3f1_di" bpmnElement="ulaganje_zalbe">
+        <dc:Bounds x="250" y="214" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_168y5kh_di" bpmnElement="urednik_bira_urednika">
+        <dc:Bounds x="820" y="347" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00vgiql_di" bpmnElement="SendNotificationToEditor">
+        <dc:Bounds x="660" y="347" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1i5gr1t_di" bpmnElement="Activity_0i12c82">
+        <dc:Bounds x="970" y="347" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_15h8lt4_di" bpmnElement="Activity_15h8lt4" isExpanded="true">
+        <dc:Bounds x="1990" y="261" width="490" height="271" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0kk7dcz_di" bpmnElement="Flow_0kk7dcz">
+        <di:waypoint x="2048" y="351" />
+        <di:waypoint x="2110" y="351" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mkq4sj_di" bpmnElement="Flow_1mkq4sj">
+        <di:waypoint x="2210" y="351" />
+        <di:waypoint x="2260" y="351" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1w8p1zy_di" bpmnElement="Flow_1w8p1zy">
+        <di:waypoint x="2360" y="351" />
+        <di:waypoint x="2392" y="351" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_11ricux_di" bpmnElement="Event_11ricux">
+        <dc:Bounds x="2012" y="333" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1c8opnb_di" bpmnElement="Event_1c8opnb">
+        <dc:Bounds x="2392" y="333" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_11f8lcj_di" bpmnElement="Activity_11f8lcj">
+        <dc:Bounds x="2110" y="311" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0dqnbo8_di" bpmnElement="Activity_0dqnbo8">
+        <dc:Bounds x="2260" y="311" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_107k1h3_di" bpmnElement="Gateway_107k1h3" isMarkerVisible="true">
+        <dc:Bounds x="2755" y="323" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0m3icce_di" bpmnElement="Activity_1t2ivhv">
+        <dc:Bounds x="2580" y="308" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11rmxjw_di" bpmnElement="Event_1ecy053">
+        <dc:Bounds x="1714" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ga1c2y_di" bpmnElement="Activity_1qtfcol">
+        <dc:Bounds x="390" y="214" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0nd2mxx_di" bpmnElement="Event_0nd2mxx">
+        <dc:Bounds x="2922" y="330" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qv3ry8_di" bpmnElement="Activity_1qv3ry8" isExpanded="true">
+        <dc:Bounds x="1120" y="270" width="630" height="280" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_01c2uy6_di" bpmnElement="Flow_01c2uy6">
+        <di:waypoint x="1640" y="370" />
+        <di:waypoint x="1672" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_106ip39_di" bpmnElement="Flow_106ip39">
+        <di:waypoint x="1500" y="370" />
+        <di:waypoint x="1540" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_120chb8_di" bpmnElement="Flow_120chb8">
+        <di:waypoint x="1300" y="428" />
+        <di:waypoint x="1300" y="490" />
+        <di:waypoint x="1362" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15pne9x_di" bpmnElement="Flow_15pne9x">
+        <di:waypoint x="1350" y="370" />
+        <di:waypoint x="1400" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rhy9g9_di" bpmnElement="Flow_0rhy9g9">
+        <di:waypoint x="1196" y="370" />
+        <di:waypoint x="1250" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0u7us39_di" bpmnElement="Event_0u7us39">
+        <dc:Bounds x="1160" y="352" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_181g8k2_di" bpmnElement="Event_181g8k2">
+        <dc:Bounds x="1672" y="352" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0dvg5a0_di" bpmnElement="urednik_skida_knjige">
+        <dc:Bounds x="1250" y="330" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1w4tq85_di" bpmnElement="urednik_salje_beleske">
+        <dc:Bounds x="1400" y="330" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10umpra_di" bpmnElement="cuvanje_beleski">
+        <dc:Bounds x="1540" y="330" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0bo68hd_di" bpmnElement="Event_0bo68hd">
+        <dc:Bounds x="1362" y="472" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ckf8es_di" bpmnElement="Event_0isv3rm">
+        <dc:Bounds x="1282" y="392" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ydp0vu_di" bpmnElement="Event_13dyqkr">
+        <dc:Bounds x="2852" y="330" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2832" y="373" width="80" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_16gegrj_di" bpmnElement="Activity_1ug34bw">
+        <dc:Bounds x="1820" y="347" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1t8stnz_di" bpmnElement="korak2">
+        <dc:Bounds x="502" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="499" y="435" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0z03xsu_di" bpmnElement="go_to_korak2">
+        <dc:Bounds x="2752" y="496" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2749" y="539" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0xttx2d_di" bpmnElement="TextAnnotation_0xttx2d">
+        <dc:Bounds x="250" y="81" width="140" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_13597ap_di" bpmnElement="TextAnnotation_13597ap">
+        <dc:Bounds x="890" y="220" width="100" height="67" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0r7ztxr_di" bpmnElement="TextAnnotation_0r7ztxr">
+        <dc:Bounds x="2850" y="170" width="100" height="67" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_07lkl1u_di" bpmnElement="TextAnnotation_07lkl1u">
+        <dc:Bounds x="2650" y="183" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_112uleb_di" bpmnElement="TextAnnotation_112uleb">
+        <dc:Bounds x="510" y="120" width="140" height="43" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0caqby4_di" bpmnElement="TextAnnotation_0caqby4">
+        <dc:Bounds x="1250" y="70" width="99.99999822778292" height="123.11265969802555" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1w6ljyf_di" bpmnElement="TextAnnotation_1w6ljyf">
+        <dc:Bounds x="2150" y="127" width="99.99999822778292" height="82" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1wsz1af_di" bpmnElement="Activity_0zr8bl0" isExpanded="true">
+        <dc:Bounds x="345" y="730" width="350" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_15rzjdh_di" bpmnElement="Flow_15rzjdh">
+        <di:waypoint x="433" y="830" />
+        <di:waypoint x="567" y="830" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1ap4w73_di" bpmnElement="Event_1ap4w73">
+        <dc:Bounds x="567" y="812" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0h5gsnd_di" bpmnElement="Event_1rhzn7j">
+        <dc:Bounds x="397" y="812" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="395" y="855" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0w0fn8s_di" bpmnElement="Event_1ohbv3m">
+        <dc:Bounds x="1552" y="252" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1v6b62w_di" bpmnElement="Event_1xux449">
+        <dc:Bounds x="1522" y="532" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1489" y="575" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_102gfs8_di" bpmnElement="Event_02koowl">
+        <dc:Bounds x="442" y="276" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_1dnaoi3_di" bpmnElement="Association_1dnaoi3">
+        <di:waypoint x="303" y="214" />
+        <di:waypoint x="308" y="137" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1q68d2n_di" bpmnElement="Association_1q68d2n">
+        <di:waypoint x="888" y="347" />
+        <di:waypoint x="916" y="287" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1m9vm40_di" bpmnElement="Association_1m9vm40">
+        <di:waypoint x="2791" y="334" />
+        <di:waypoint x="2861" y="237" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1qq3aqj_di" bpmnElement="Association_1qq3aqj">
+        <di:waypoint x="2650" y="308" />
+        <di:waypoint x="2686" y="237" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0ufelu2_di" bpmnElement="Association_0ufelu2">
+        <di:waypoint x="482" y="215" />
+        <di:waypoint x="535" y="163" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_01hwtrn_di" bpmnElement="Association_01hwtrn">
+        <di:waypoint x="1377" y="270" />
+        <di:waypoint x="1345" y="193" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0i96nvu_di" bpmnElement="Association_0i96nvu">
+        <di:waypoint x="2216" y="261" />
+        <di:waypoint x="2209" y="209" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,13 @@
+2021-01-31 23:09:49,574 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 9.785 seconds (JVM running for 11.407)
+2021-01-31 23:13:55,899 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-01-31 23:14:05,896 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 11.778 seconds (JVM running for 12.875)
+2021-01-31 23:15:44,910 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-01-31 23:15:54,697 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 11.559 seconds (JVM running for 12.495)
+2021-01-31 23:24:51,049 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-01-31 23:25:01,097 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 11.958 seconds (JVM running for 12.926)
+2021-01-31 23:27:24,876 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-01-31 23:27:33,753 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 10.563 seconds (JVM running for 11.37)
+2021-01-31 23:32:32,802 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-01-31 23:32:43,329 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 12.353 seconds (JVM running for 13.376)
+2021-01-31 23:34:55,161 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-01-31 23:35:05,320 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 12.265 seconds (JVM running for 13.341)

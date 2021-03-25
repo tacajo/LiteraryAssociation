@@ -1,0 +1,241 @@
+<nav class="navbar navbar-expand-md navbar-light">
+
+  <div class="collapse navbar-collapse" id="collapse_target">
+
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item"><img class="logo" [src]=imageURL></li>
+
+      <li class="nav-item items"><button type="button" (click)="showHome()" class="nav-link btn">
+          <mat-icon>notifications</mat-icon>Home
+        </button></li>
+      <li *ngIf="isComitteeMember()" class="nav-item items"><button type="button" (click)="showGiveOpinion()"
+          class="nav-link btn">
+          <mat-icon>menu_book</mat-icon>Give opinion
+        </button></li>
+      <li *ngIf="!isComitteeMember()" class="nav-item items"><button type="button" class="nav-link btn">
+          <mat-icon>person</mat-icon>Profile
+        </button></li>
+
+      <li *ngIf="!isAdmin() && !isComitteeMember() && !isWriter()" class="nav-item items"><button type="button" (click)="showCart()"
+
+          class="nav-link btn">
+          <mat-icon>shopping_cart</mat-icon>Cart
+        </button></li>
+      <li *ngIf="isAdmin()" class="nav-item items"><button type="button" (click)="showPaymentOption()"
+          class="nav-link btn">
+          <mat-icon>payment</mat-icon>Payment option
+        </button></li>
+        <li *ngIf="!isAdmin() && !isComitteeMember() && this.merchant.registered"   class="nav-item items"><a (click)="subscribe()"  class="nav-link btn">Subscribe
+       </a></li>
+       <li *ngIf="isWriter()" class="nav-item items"><a (click)="reportPlagiarism()"
+        class="nav-link btn">Report plagiarism
+     </a></li>
+      <li *ngIf="isWriter()" class="nav-item items"><button type="button" (click)="publishingABook()"
+        class="nav-link btn">
+        <mat-icon>library_books</mat-icon>Publish your book
+      </button></li>
+      <li *ngIf="isEditor()" class="nav-item items"><button type="button" (click)="editorTasks()"
+        class="nav-link btn">
+        <mat-icon>assignment</mat-icon>Tasks
+      </button></li>
+      <li *ngIf="isEditor()" class="nav-item items"><button type="button" (click)="editorPlagiarism()"
+        class="nav-link btn">
+        <mat-icon>assignment</mat-icon>Plagiarisms
+      </button></li>
+      <li *ngIf="isEditor()" class="nav-item items"><button type="button" (click)="originals()"
+        class="nav-link btn">
+        <mat-icon>assignment_returned</mat-icon>Originals
+      </button></li>
+      <li *ngIf="isWriter()" class="nav-item items"><button type="button" (click)="uploadPdfs()"
+        class="nav-link btn">
+        <mat-icon>create_new_folder</mat-icon>Upload pdfs
+      </button></li>
+      <li *ngIf="isEditor()" class="nav-item items"><button type="button" (click)="chooseBetaR()"
+        class="nav-link btn">
+        <mat-icon>plus</mat-icon>Choose BetaR
+      </button></li>
+
+      <li *ngIf="isEditor()" class="nav-item items"><button type="button" (click)="acceptBook()"
+        class="nav-link btn">
+        <mat-icon>done</mat-icon>Accept Book
+      </button></li>
+
+      <!-- slanje beta citaocima -->
+      <li *ngIf="isEditor()" class="nav-item items"><button matTooltip="Send to beta readers" type="button" type="button" (click)="sendToBetaReaders()"
+        class="nav-link btn">
+        <mat-icon>assignment_ind</mat-icon> 
+      </button></li>
+
+      <li *ngIf="isReader() || isAdmin()" class="nav-item items"><button type="button" (click)="addComment()"
+        class="nav-link btn">
+        <mat-icon>comment</mat-icon>Add comment
+      </button></li>
+
+      <!-- urednik skida obe knjige -->
+      <li *ngIf="isEditor()" class="nav-item items"><button matTooltip="Download books" type="button" (click)="downloadBooks()"
+        class="nav-link btn">
+        <mat-icon>assignment_returned</mat-icon> 
+      </button></li>
+
+      <!-- urednik bira editore koji ce uporedjivati knjige -->
+      <li *ngIf="isEditor()" class="nav-item items"><button matTooltip="Choose editors for plagiarism" type="button" (click)="editorForPlagiarismChoose()"
+        class="nav-link btn">
+        <mat-icon >people</mat-icon> 
+      </button></li>
+
+      <!-- editori dodaju beleske o poredjenju -->
+      <li *ngIf="isEditor()" class="nav-item items"><button matTooltip="Add notes" type="button" (click)="addNotes()"
+        class="nav-link btn">
+        <mat-icon >note_add</mat-icon> 
+      </button></li>
+
+    </ul>
+    <ul class="navbar-nav">
+      <li class="nav-item items"><button (click)="logOut()" type="button" class="nav-link btn"><span
+            class="navbar-text">{{userService.getUsername()}} </span>log out</button></li>
+    </ul>
+  </div>
+
+
+</nav>
+
+<div class="container" *ngIf="this.home">
+
+  <div *ngIf="isWriter() && !userService.currentUser.member && !userService.currentUser.waitingForVotes">
+    <form>
+      <mat-progress-bar *ngIf="waiting" mode="indeterminate"></mat-progress-bar>
+      <br/>
+      <label for="files">Select files:</label>
+      <br/>
+      <input style="color: white;"  type="file" id="pdfs" name="files" (change)="selectFiles($event)" multiple><br><br>
+      <button mat-raised-button color="accent" (click)="savePdfs()"><strong>Add PDF files</strong></button>
+  </form>
+  </div>
+
+  <div *ngIf="isWriter() && userService.currentUser.membershipFeePaid == false && userService.currentUser.member == true">
+    <button (click)="payFee()" mat-raised-button color="accent">Pay membership fee: <i>28.99$</i></button>
+  </div>
+
+  <div *ngIf="!(isWriter() && !userService.currentUser.member)" class="row book">
+
+    <div *ngFor="let book of books">
+      <div class="card">
+        <div class="card-body">
+          <h1 style="float: right;color:#388E3C;" class="card-title">${{book.price}}</h1>
+          <h3 align="center" class="card-title"><b>,,{{book.title}}''</b></h3>
+          <h3 align="center" class="card-title">{{book.writer.firstName}} {{book.writer.lastName}}</h3>
+          <h6 align="center" class="card-title">{{book.year}}</h6>
+          
+          <p class="card-text">ISBN: {{book.isbn}}</p>
+          <p class="card-text">page numbers: {{book.pageNumber}}</p>
+        
+          <a class="btn btn-primary" style="float: right;" (click)="addToCard(book.id)">Add to cart</a>
+        </div>
+      </div>
+    </div>
+    
+
+    
+  </div>
+</div>
+
+<div class="container">
+  <app-form [processId] = "processId" *ngIf="isComitteeMember() && this.opinion"></app-form>
+</div>
+
+<div class="container" *ngIf="chooseBetaReader">
+  <app-form [processId] = "processId" ></app-form>
+</div>
+
+
+<!-- Card -->
+<div class="container shopping-cart" *ngIf="this.cart">
+  <div class="card">
+    <div class="card-body">
+      <h3 class="mb-3">The total amount of</h3>
+
+      <ul>
+        <div *ngFor="let book of books">
+          <li >
+            <h3>,,{{book.title}}''</h3>
+            <h3 style="font-size: 12px;">{{book.writer.firstName}} {{book.writer.lastName}}</h3>
+            <span style="float: right;">${{book.price}}</span>
+          </li>
+          <hr>
+        </div>
+        
+        <li>
+          <div>
+            <strong>The total amount of</strong>
+            <strong>
+              <p class="mb-0">(including VAT)</p>
+            </strong>
+          </div>
+          <span style="float: right;"><strong>${{this.amount}}</strong></span>
+        </li>
+      </ul>
+
+      <button type="button" *ngIf="this.merchant.registered"  style="width: 100%; padding-left: 20px; padding-right: 20px;" class="btn btn-primary"
+        (click)="pay()">Pay</button>
+        <p *ngIf="!this.merchant.registered">You cannot pay because merchant is not registered to payment concentrator.</p>
+    </div>
+  </div>
+  <!-- Card -->
+
+</div>
+<div class="container" *ngIf="payment">
+  <app-payment-option></app-payment-option>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="publishABook">
+  <app-publishing-abook></app-publishing-abook>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="tasksEditor">
+  <app-editor-tasks></app-editor-tasks>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="editorPlagiarisms">
+  <app-choose-original [processId]="processId"></app-choose-original>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="original">
+  <app-originals [processId]="processId"></app-originals>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="downloadBooksEditor">
+  <app-download-books [processId]="processId"></app-download-books>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="uploadPdfsPage">
+  <app-upload-pdfs></app-upload-pdfs>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="acceptBookTask">
+  <app-form [processId]="processId"></app-form>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="sendBetaReaders || addCommentForm">
+  <app-form [processId]="processId"></app-form>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="addingNotes">
+  <app-form [processId]="processId"></app-form>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="editorForPlagiarism">
+  <app-editor-for-plagiarism-choose></app-editor-for-plagiarism-choose>
+</div>
+
+<div class="container" style="margin-top: 100px;" *ngIf="reportPlagiarsmFlag">
+  <app-plagiarism></app-plagiarism>
+</div>
+
+<div class="copyright-container">
+  <footer>
+    <div class="footer-copyright text-center py-3">© 2020 Copyright:
+
+    </div>
+    <!-- Copyright -->
+  </footer>
+</div>

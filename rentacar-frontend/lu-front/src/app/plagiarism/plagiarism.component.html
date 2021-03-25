@@ -1,0 +1,17 @@
+<div align="center" class="testbox">
+        <form>
+          <div *ngFor="let field of data.formFields; let i = index;">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{field.label}}</mat-label>
+              <input matInput *ngIf="field.id!='password' && field.id!='rePassword'" type="text" name={{field.id}}
+                [(ngModel)]="formValues[i].fieldValue" placeholder={{field.label}} [required]="validation(field)" />
+              <input matInput *ngIf="field.id=='password' || field.id=='rePassword'" type="password" id={{field.id}}
+                name={{field.id}} [(ngModel)]="formValues[i].fieldValue" placeholder={{field.label}}
+                [required]="validation(field)" />
+            </mat-form-field>
+          </div>
+          <button mat-raised-button color="primary" (click)="confirm()">Confirm</button>
+        </form>
+
+  
+  </div>

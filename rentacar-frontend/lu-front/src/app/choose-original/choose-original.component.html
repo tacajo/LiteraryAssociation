@@ -1,0 +1,44 @@
+<div class="container">
+    <div *ngIf="this.showForm" class="row">
+      <div *ngFor="let forms of data">
+        <div class="card">
+          <div class="card-body">
+            <div class="form-group">
+              <div class="card-header">
+                <h2 style="color: white; padding-left: 20px">
+                  {{ forms.formFields[0].defaultValue }}
+                </h2>
+              </div>
+  
+              <ul style="padding-left: 20px;">
+                <li class="my-3 sub-text">
+                    {{ forms.formFields[2].label }}
+                  <br />
+                  <strong>
+                    <span>{{ forms.formFields[2].defaultValue }}</span>
+                  </strong>
+                </li>
+                <hr />
+                <li style="height: 70px;" class="my-3 sub-text">
+                    {{ forms.formFields[1].label }}
+                  <br />
+                  <strong>
+                    <span>{{ forms.formFields[1].defaultValue }}</span>
+                  </strong>
+                </li>
+              </ul>
+                  <div class="fr">
+                      <a class="btn btn-primary mx-2" (click)="accept(forms.formFields[3].defaultValue, forms.formFields[0].defaultValue)">Original</a>
+                      <a class="btn btn-secondary mx-2" (click)="decline(forms.formFields[3].defaultValue, forms.formFields[0].defaultValue)">Not original</a>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="!this.showForm" class="info">
+    <h2>There are no new books.</h2>
+  </div>
+  

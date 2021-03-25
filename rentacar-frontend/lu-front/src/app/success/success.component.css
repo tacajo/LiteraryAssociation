@@ -1,0 +1,277 @@
+
+
+button {
+    margin: 20px;
+}
+
+label {
+    font-size: 20px;
+    color: white;
+}
+
+input[type="file"] {
+    font-family: 'Varela Round', sans-serif;
+    padding: 10px;
+    margin: 5px;
+}
+input #file-upload-button {
+    font-family: 'Varela Round', sans-serif;
+    padding: 10px;
+    margin: 5px;
+}
+
+* {
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+}
+.copyright-container {
+    position: relative;
+    width: 100%;
+    bottom: 0;
+  }
+ul p {
+    padding: 10px;
+    margin-left: 0px;
+    font-size: 15px;
+    font-weight: 500;
+    position: flex;
+    color: #0275d8 ;
+}
+a,
+a:focus {
+    color: inherit;
+    text-decoration: none;
+}
+a:hover{
+    background: #0275d8  !important;
+    opacity: 0.9;
+    color: #fff !important;
+    font-weight: bold;
+}
+.wrapper {
+    margin-top: 60px;
+    display: flex;
+    position: fixed;
+}
+
+.wrapper .sidebar {
+    position: flex;
+    width: 270px;
+    overflow-y: scroll;
+    background:#262626;
+    color: #fff;
+    padding: 30px 0;
+    opacity: 0.9;
+
+       
+}
+
+.wrapper .sidebar h2 {
+    color: #fff;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.wrapper .sidebar ul li a{
+    padding: 10px;
+    font-size: 15px;
+    font-weight: inherit;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.wrapper .sidebar ul li a{
+    color:white;
+    display: block;
+}
+
+.wrapper .sidebar ul li a .fa {
+    width: 25px;
+}
+
+#sidebar ul.components {
+    padding: 0px 0 0 0;
+    padding-bottom: 30px;
+}
+
+#slidebar ul p {
+    color: #262626;
+    padding: 10px 0 0 0;
+}
+ul #bzr,
+ul #zop{
+    padding: 0px 0px 0px 0px;
+}
+
+#slidebar ul li a{
+    padding: 10px 0 0 0;
+    font-size: 1.1em;
+    display: block;
+}
+
+
+#slidebar ul li.active>a,
+a[aria-expanded="true"]{
+    color: #fff;
+    background: #757575;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+    height: 100%;
+}
+
+.dropdown-toggle::after{
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20%;
+    transform: translateY(-50%);   
+}
+
+ul ul a{
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: #757575 ;
+}
+
+mat-icon {
+    font-size: 20px;
+    margin-right: 10px;
+    filter:drop-shadow(5px 4px 2px#212121);
+    position: relative;
+    top: 3px
+}
+
+
+nav ul li mat-icon {
+    margin-right: 3px !important;
+    display: inline;
+}
+
+nav {
+    opacity: 0.9;
+    overflow: hidden;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+    z-index: 1;
+    background-color: #333D51;
+}
+
+nav ul li.logo {
+    flex: 1;
+    color: darkgrey;
+    font-size: 30px;
+    font-weight: bold;
+    padding-top: 10px;
+}
+
+nav ul .navbar-text {
+    flex: 1;
+    color:#B9C0CA;
+    font-size: 15px;
+    padding-top: 10px;
+    width: 100%;
+}
+
+nav ul  {
+    display: inline-flex;
+    padding: 0 25px;
+}
+
+nav ul li {
+    padding-right: 10px;
+}
+
+nav ul li .nav-link {
+    color: white;
+}
+
+nav ul li .nav-link:hover {
+    color: gray;
+}
+nav ul li .items {
+    float: right;
+}
+
+nav ul li form .form-control {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+nav ul li form .btn {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+nav ul li button span{
+    display: inline;
+    width: 100%;
+    height: 60px;
+}
+
+.nav-right {
+    float: right;
+}
+
+.logo {
+    height: 40px;
+    margin-left: 0;
+}
+
+@media screen and (max-width: 770px) {
+    nav {
+        padding: 0px;
+    }
+
+    nav ul li .nav-link {
+        font-size: 13px;
+    }
+    nav ul li button span{
+        font-size: 13px;
+    }
+    nav ul li.logo {
+       display: none;
+    }
+    nav ul li form .form-control {
+        width: 150px;
+        font-size: 13px;
+    }
+
+    .wrapper {
+        display: none;
+    }
+    #event-list {
+        margin-left: 10px;
+        margin-right: 10px;
+        width: 100%;
+    }
+    .container{
+        padding: 0;
+        margin: 0;
+    }
+    
+
+}
+
+
+.container {
+    margin-top: 80px;
+}
+.card {
+    margin-top: 30px;
+    width: 30rem;
+    margin-left: 30px;
+    background-color: rgb(51, 61, 81, 0.8);
+    color: white;
+}
+
+p, h1, h2, h3, h4, h5, h6, small {
+    font-family: 'Varela Round', sans-serif;
+}
+
+
+

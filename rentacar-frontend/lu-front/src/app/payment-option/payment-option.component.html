@@ -1,0 +1,13 @@
+<button *ngIf="this.registred == false" (click)="register()" mat-raised-button color="primary">Click to Register to payment concentrator</button>
+<div *ngIf="this.registred">
+    <div *ngFor="let option of paymentOption.option">
+        <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{option}}</h5>
+              <button *ngIf="!isSubscribed(option)" (click)="subscribe(option)" class="btn btn-primary" style="float: right;">Subscribe</button>
+              <button *ngIf="isSubscribed(option)" (click)="unsubscribe(option)"  class="btn btn-primary" style="float: right;">Unsubscribe</button>
+            </div>
+          </div>
+    </div>
+</div>
+

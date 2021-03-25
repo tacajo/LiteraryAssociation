@@ -1,0 +1,46 @@
+version: '3'
+services:
+
+  eureka:
+    build: ./eureka
+    ports:
+     - "8761:8761"
+    container_name: eureka
+    tty: true
+
+  bank:
+    build: ./bank-service
+    ports:
+    - "8081:8081"
+    container_name: bank
+    restart: always
+    environment:
+      - REGISTRY_HOST=eureka
+    tty: true
+    depends_on:
+      - zuul
+
+  lu:
+    build: ./LiteraryAssociation
+    ports:
+    - "8080:8080"
+    container_name: lu
+    restart: always
+    environment:
+      - REGISTRY_HOST=eureka
+    tty: true
+    environment:
+      - docker=zuul
+    depends_on:
+      - zuul
+
+  zuul:
+    build: ./zuul
+    ports:
+    - "8084:8084"
+    environment:
+      - REGISTRY_HOST=eureka
+    container_name: zuul
+    tty: true
+    depends_on:
+      - eureka

@@ -1,0 +1,19 @@
+<div align="center" class="testbox">
+        <form class="formPublish">
+          <div *ngFor="let field of data.formFields; let i = index;">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{field.label}}</mat-label>
+                <input matInput *ngIf="field.id!='zanr' && field.id!='sinopsis'" type="text" name={{field.id}} [(ngModel)]="formValues[i].fieldValue"
+                    placeholder={{field.label}} />
+                <mat-select  name="field.id" [(ngModel)]="formValues[i].fieldValue" *ngIf="field.type.name=='enum'">
+                    <mat-option *ngFor="let val of zanr" value={{val}}>
+                        {{field.type.values[val]}}
+                    </mat-option>
+                </mat-select>
+                <textarea matInput *ngIf="field.id=='sinopsis'" type="text" name={{field.id}} [(ngModel)]="formValues[i].fieldValue"
+              row="3"></textarea>
+            </mat-form-field>
+          </div>
+          <button mat-raised-button color="primary" (click)="publish()">Publish</button>
+        </form>
+  </div>

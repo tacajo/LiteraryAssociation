@@ -1,0 +1,14 @@
+2021-02-01 00:11:36,155 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-02-01 00:11:48,111 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 14.169 seconds (JVM running for 15.299)
+2021-02-01 00:16:11,609 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-02-01 00:16:21,974 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 12.228 seconds (JVM running for 13.414)
+2021-02-01 00:36:18,607 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-02-01 00:36:29,242 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 12.352 seconds (JVM running for 13.155)
+2021-02-01 00:41:20,725 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-02-01 00:42:03,333 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 47.792 seconds (JVM running for 49.207)
+2021-02-01 00:59:22,348 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-02-01 00:59:35,444 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 14.82 seconds (JVM running for 15.676)
+2021-02-01 01:05:50,540 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-02-01 01:06:01,017 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 12.342 seconds (JVM running for 13.152)
+2021-02-01 01:07:12,634 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2021-02-01 01:07:20,979 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started BitcoinServiceApplication in 9.973 seconds (JVM running for 10.777)

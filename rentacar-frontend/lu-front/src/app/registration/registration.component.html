@@ -1,0 +1,36 @@
+<div align="center" class="testbox">
+  <mat-tab-group style="align-items: center;" mat-align-tabs="start">
+    <mat-tab label="Login">
+      <form style="margin-top: 30px;">
+        <div>
+          <mat-form-field class="example-full-width">
+            <mat-label>Username</mat-label>
+            <input matInput type="text" name="username" [(ngModel)]="user.username" placeholder="username" required />
+          </mat-form-field>
+          <mat-form-field class="example-full-width">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" id="password" name="password" [(ngModel)]="user.password"
+              placeholder="password" required />
+
+          </mat-form-field>
+        </div>
+        <button mat-raised-button color="primary" (click)="login()">Login</button>
+      </form>
+    </mat-tab>
+
+    <mat-tab label="Registration">
+      <div class="accounttype" style="width: 350px;">
+        <mat-radio-group (change)="radioChange($event)" color="primary" aria-label="Select an option">
+          <mat-radio-button id="radioOne" value="1">Writer</mat-radio-button>
+          <mat-radio-button value="2">Reader</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+     <app-form [processId] = "processId" *ngIf="visible"></app-form>
+    </mat-tab>
+
+  </mat-tab-group>
+
+
+
+</div>

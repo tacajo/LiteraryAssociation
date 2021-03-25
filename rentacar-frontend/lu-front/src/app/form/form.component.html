@@ -1,0 +1,37 @@
+<div class="testbox">
+<form style="padding: 20px;" >
+  <div *ngFor="let field of data.formFields; let i = index;">
+    <input *ngIf="field.id=='pdfs'"  type="field.properties.input" (change)="selectFiles($event)" id="pdfs" name="files" multiple><br><br>
+    <div *ngIf="field.properties.fieldType=='button'">
+      <button mat-raised-button color="primary" (click)="downloadFile(field.defaultValue)">Submit</button>
+    </div>
+
+    <h1 *ngIf="field.properties.valueType=='defaultValue'">{{field.defaultValue}}</h1>
+
+    <mat-form-field *ngIf="field.properties.valueType!='defaultValue' && field.type.name=='string'" class="example-full-width">
+      <mat-label id="field">{{field.label}}</mat-label>
+      <input matInput type={{field.properties.valueType}} name={{field.id}}
+        [(ngModel)]="formValues[i].fieldValue" placeholder={{field.label}} [required]="validation(field)" />
+    </mat-form-field>
+    
+    <div *ngIf="field.id=='betaReader'">
+      <mat-checkbox [(ngModel)]="betaReader" name="betaReader" class="example-margin">{{field.label}}</mat-checkbox>
+    </div>
+
+    <div *ngIf="field.type.name=='boolean' && field.id!='betaReader'">
+      <mat-checkbox [(ngModel)]="booleanField" name="prihvataSe" class="example-margin">{{field.label}}</mat-checkbox>
+    </div>
+
+    <div *ngIf="field.type.name=='enum'">
+      <mat-label id="field">{{field.label}}</mat-label>
+      <mat-select [(ngModel)]="formValues[i].fieldValues" name="field.id" multiple>
+        <mat-option *ngFor="let val of enum" value={{val}}>
+          {{field.type.values[val]}}
+        </mat-option>
+      </mat-select>
+    </div>
+  </div>
+
+  <button mat-raised-button color="primary" (click)="submit()">Submit</button>
+</form>
+</div>

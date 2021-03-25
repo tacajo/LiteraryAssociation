@@ -1,0 +1,23 @@
+<div class="bgImage">
+    <div class="testbox">
+        <mat-tab-group style="align-items: center;" mat-align-tabs="start">
+            <mat-tab label="Confirm your credentials">
+                <form>
+                    <hr>
+                    <div class="accounttype">
+                        <label id="icon" for="name"><i class="icon-user"></i></label>
+                        <input matInput type="text" name="username" placeholder="username" [(ngModel)]='user.username'  />
+                        <label id="icon" for="name"><i class="icon-shield"></i></label>
+                        <input matInput type="password" id="password" name="password" [(ngModel)]='user.password'
+                          placeholder="password"  />
+                        
+                    </div>
+                    <hr>
+                    <a (click)="confirm()" class="button">Confirm</a>
+                </form>
+            </mat-tab>
+        </mat-tab-group>
+
+    </div>
+
+</div>

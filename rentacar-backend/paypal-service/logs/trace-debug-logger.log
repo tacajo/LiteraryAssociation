@@ -1,0 +1,96 @@
+2021-01-15 00:50:12,343 DEBUG com.paypal.base.rest.PayPalResource [http-nio-8085-exec-3] request header: {Authorization=Bearer A21AAJZ0eGqksp78_NuTggBnXVdcdTbdtaROQLtxQ-J7arkR_HFtiWXFb0xC-hchJ6t33IJWYz6xVbRhI-nCTZHOKEq7AKKSg, User-Agent=PayPalSDK/  (v=15.0.1; vendor=Oracle Corporation; bit=64; os=Windows_10 10.0), PayPal-Request-Id=65dbe12d-1fd5-4128-b97f-eb6cd6880200, Content-Type=application/json}
+2021-01-15 00:50:12,346 DEBUG com.paypal.base.rest.PayPalResource [http-nio-8085-exec-3] request body: {
+  "intent": "sale",
+  "payer": {
+    "payment_method": "paypal"
+  },
+  "transactions": [
+    {
+      "amount": {
+        "currency": "USD",
+        "total": "2",
+        "details": {}
+      },
+      "description": "This is the payment transaction description."
+    }
+  ],
+  "redirect_urls": {
+    "return_url": "http://localhost:4201/success",
+    "cancel_url": "http://localhost:4201/cancel"
+  }
+}
+2021-01-15 00:50:12,348 DEBUG com.paypal.base.HttpConnection [http-nio-8085-exec-3] curl command: 
+curl -v 'https://api.sandbox.paypal.com/v1/payments/payment' \
+-H "Authorization: Bearer A21AAJZ0eGqksp78_NuTggBnXVdcdTbdtaROQLtxQ-J7arkR_HFtiWXFb0xC-hchJ6t33IJWYz6xVbRhI-nCTZHOKEq7AKKSg" \
+-H "User-Agent: PayPalSDK/  (v=15.0.1; vendor=Oracle Corporation; bit=64; os=Windows_10 10.0)" \
+-H "PayPal-Request-Id: 65dbe12d-1fd5-4128-b97f-eb6cd6880200" \
+-H "Content-Type: application/json" \
+-d '{
+  "intent": "sale",
+  "payer": {
+    "payment_method": "paypal"
+  },
+  "transactions": [
+    {
+      "amount": {
+        "currency": "USD",
+        "total": "2",
+        "details": {}
+      },
+      "description": "This is the payment transaction description."
+    }
+  ],
+  "redirect_urls": {
+    "return_url": "http://localhost:4201/success",
+    "cancel_url": "http://localhost:4201/cancel"
+  }
+}'
+2021-01-15 00:50:13,691 DEBUG com.paypal.base.rest.PayPalResource [http-nio-8085-exec-3] response: {"id":"PAYID-MAANRNI03K59836R5921054C","intent":"sale","state":"created","payer":{"payment_method":"paypal"},"transactions":[{"amount":{"total":"2.00","currency":"USD","details":{}},"description":"This is the payment transaction description.","related_resources":[]}],"create_time":"2021-01-14T23:50:12Z","links":[{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-MAANRNI03K59836R5921054C","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-5V893332NU591061F","rel":"approval_url","method":"REDIRECT"},{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-MAANRNI03K59836R5921054C/execute","rel":"execute","method":"POST"}]}
+2021-01-15 00:50:22,128 DEBUG com.paypal.base.rest.PayPalResource [http-nio-8085-exec-4] request header: {Authorization=Bearer A21AAJZ0eGqksp78_NuTggBnXVdcdTbdtaROQLtxQ-J7arkR_HFtiWXFb0xC-hchJ6t33IJWYz6xVbRhI-nCTZHOKEq7AKKSg, User-Agent=PayPalSDK/  (v=15.0.1; vendor=Oracle Corporation; bit=64; os=Windows_10 10.0), PayPal-Request-Id=8bb75485-1073-44df-afb4-7a89037ed267, Content-Type=application/json}
+2021-01-15 00:50:22,129 DEBUG com.paypal.base.rest.PayPalResource [http-nio-8085-exec-4] request body: {
+  "intent": "sale",
+  "payer": {
+    "payment_method": "paypal"
+  },
+  "transactions": [
+    {
+      "amount": {
+        "currency": "USD",
+        "total": "2",
+        "details": {}
+      },
+      "description": "This is the payment transaction description."
+    }
+  ],
+  "redirect_urls": {
+    "return_url": "http://localhost:4201/success",
+    "cancel_url": "http://localhost:4201/cancel"
+  }
+}
+2021-01-15 00:50:22,130 DEBUG com.paypal.base.HttpConnection [http-nio-8085-exec-4] curl command: 
+curl -v 'https://api.sandbox.paypal.com/v1/payments/payment' \
+-H "Authorization: Bearer A21AAJZ0eGqksp78_NuTggBnXVdcdTbdtaROQLtxQ-J7arkR_HFtiWXFb0xC-hchJ6t33IJWYz6xVbRhI-nCTZHOKEq7AKKSg" \
+-H "User-Agent: PayPalSDK/  (v=15.0.1; vendor=Oracle Corporation; bit=64; os=Windows_10 10.0)" \
+-H "PayPal-Request-Id: 8bb75485-1073-44df-afb4-7a89037ed267" \
+-H "Content-Type: application/json" \
+-d '{
+  "intent": "sale",
+  "payer": {
+    "payment_method": "paypal"
+  },
+  "transactions": [
+    {
+      "amount": {
+        "currency": "USD",
+        "total": "2",
+        "details": {}
+      },
+      "description": "This is the payment transaction description."
+    }
+  ],
+  "redirect_urls": {
+    "return_url": "http://localhost:4201/success",
+    "cancel_url": "http://localhost:4201/cancel"
+  }
+}'
+2021-01-15 00:50:23,566 DEBUG com.paypal.base.rest.PayPalResource [http-nio-8085-exec-4] response: {"id":"PAYID-MAANRPQ10119236DL0744231","intent":"sale","state":"created","payer":{"payment_method":"paypal"},"transactions":[{"amount":{"total":"2.00","currency":"USD","details":{}},"description":"This is the payment transaction description.","related_resources":[]}],"create_time":"2021-01-14T23:50:22Z","links":[{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-MAANRPQ10119236DL0744231","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-1UE13864N2713801D","rel":"approval_url","method":"REDIRECT"},{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-MAANRPQ10119236DL0744231/execute","rel":"execute","method":"POST"}]}

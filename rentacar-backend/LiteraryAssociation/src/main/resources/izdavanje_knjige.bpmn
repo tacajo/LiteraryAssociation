@@ -1,0 +1,1020 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0gyye9e" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="izdavanje_knjige" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_14viqcd</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_14viqcd" sourceRef="StartEvent_1" targetRef="pisac_unosi_podatke_o_knjizi" />
+    <bpmn:userTask id="pisac_unosi_podatke_o_knjizi" name="Pisac unosi podatke o knjizi">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="naslov" label="Title" type="string" />
+          <camunda:formField id="zanr" label="Genre" type="enum" />
+          <camunda:formField id="sinopsis" label="Synopsis" type="string" />
+          <camunda:formField id="nazivAkcije" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_14viqcd</bpmn:incoming>
+      <bpmn:incoming>Flow_1j8162u</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mv59p1</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1mv59p1" sourceRef="pisac_unosi_podatke_o_knjizi" targetRef="prijava_knjige_u_sistem" />
+    <bpmn:serviceTask id="prijava_knjige_u_sistem" name="Prijava knjige u sistem" camunda:class="com.LiteraryAssociation.handler.SaveBook">
+      <bpmn:incoming>Flow_1mv59p1</bpmn:incoming>
+      <bpmn:outgoing>Flow_1dsb3n1</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="urednik_pregleda_knjigu" name="Urednik pregleda knjigu" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="naslov_pregled" label="Title" type="string" defaultValue="${naslov}" />
+          <camunda:formField id="sinopsis_pregled" label="Synopsis" type="string" defaultValue="${sinopsis}" />
+          <camunda:formField id="pisac_pregled" label="Writer" type="string" defaultValue="${pisac}" />
+          <camunda:formField id="pisac_username_pregled" label="Username" type="string" defaultValue="${pisac_username}" />
+          <camunda:formField id="zeliDaPregleda" label="Do you want to preview the book?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0cto1go</bpmn:incoming>
+      <bpmn:outgoing>Flow_0zgayvx</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1dsb3n1" sourceRef="prijava_knjige_u_sistem" targetRef="odabir_glavnog_urednika" />
+    <bpmn:sequenceFlow id="Flow_0cztwwx" sourceRef="odabir_glavnog_urednika" targetRef="slanje_email_notifikacije_uredniku" />
+    <bpmn:serviceTask id="odabir_glavnog_urednika" name="Odabir glavnog urednika" camunda:class="com.LiteraryAssociation.handler.MainEditor">
+      <bpmn:incoming>Flow_1dsb3n1</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cztwwx</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1m288lv">
+      <bpmn:incoming>Flow_0zgayvx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0zmtis7</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0rj3puv</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0zgayvx" sourceRef="urednik_pregleda_knjigu" targetRef="Gateway_1m288lv" />
+    <bpmn:sequenceFlow id="Flow_0zmtis7" name="Urednik prihvata rad" sourceRef="Gateway_1m288lv" targetRef="slanje_email_notifikacije_piscu">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${accept==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0rj3puv" name="Urednik ne prihvata rad" sourceRef="Gateway_1m288lv" targetRef="odbijanje_rada">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${accept==false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="pisac_salje_rukopis" name="Pisac salje rukopis" camunda:assignee="${writerId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="naslov" label="Title" type="string" defaultValue="${naslov}" />
+          <camunda:formField id="sinopsis" label="Synopsis" type="string" defaultValue="${sinopsis}" />
+          <camunda:formField id="pdfs" label="Pdfs" type="file">
+            <camunda:properties>
+              <camunda:property id="input" value="file" />
+            </camunda:properties>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0lb3y2r</bpmn:incoming>
+      <bpmn:outgoing>Flow_0x8meo5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0x8meo5" sourceRef="pisac_salje_rukopis" targetRef="Radna_verzija_se_deponuje_u_sistem_za_plagijarizam" />
+    <bpmn:serviceTask id="Radna_verzija_se_deponuje_u_sistem_za_plagijarizam" name="Radna verzija se deponuje u sistem za plagijarizam" camunda:class="com.LiteraryAssociation.handler.PlagiarismDetection">
+      <bpmn:incoming>Flow_0x8meo5</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ea9nt6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_10oaku3" sourceRef="Event_0ur1q17" targetRef="Activity_0gft5kj" />
+    <bpmn:boundaryEvent id="Event_0ur1q17" attachedToRef="pisac_salje_rukopis">
+      <bpmn:outgoing>Flow_10oaku3</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_18ai8an">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT30S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Event_01e7ya9" attachedToRef="prijava_knjige_u_sistem">
+      <bpmn:outgoing>Flow_1j8162u</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1876rem" errorRef="Error_0fhfkbi" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1j8162u" name="uneta knjiga vec postoji" sourceRef="Event_01e7ya9" targetRef="pisac_unosi_podatke_o_knjizi" />
+    <bpmn:sequenceFlow id="Flow_0ea9nt6" sourceRef="Radna_verzija_se_deponuje_u_sistem_za_plagijarizam" targetRef="Urednik_odlucuje_da_li_je_delo_originalno" />
+    <bpmn:userTask id="Urednik_odlucuje_da_li_je_delo_originalno" name="Urednik odlucuje da li je delo originalno" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="naslov_original_pregled" label="Title" type="string" defaultValue="${naslov}" />
+          <camunda:formField id="sinopsis_original_pregled" label="Synopsis" type="string" defaultValue="${sinopsis}" />
+          <camunda:formField id="pisac_original_pregled" label="Writer" type="string" defaultValue="${pisac}" />
+          <camunda:formField id="pisac_username_pregled" label="Username" type="string" defaultValue="${pisac_username}" />
+          <camunda:formField id="originalno" label="Original?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0ea9nt6</bpmn:incoming>
+      <bpmn:outgoing>Flow_0fpi2se</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_1lwuxw1">
+      <bpmn:incoming>Flow_0fpi2se</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qj1yhx</bpmn:outgoing>
+      <bpmn:outgoing>Flow_05hm79v</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0fpi2se" sourceRef="Urednik_odlucuje_da_li_je_delo_originalno" targetRef="Gateway_1lwuxw1" />
+    <bpmn:sequenceFlow id="Flow_1qj1yhx" name="Original" sourceRef="Gateway_1lwuxw1" targetRef="Urednik_downloaduje_i_cita_rad">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${original==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_05hm79v" name="Nije original" sourceRef="Gateway_1lwuxw1" targetRef="Activity_0sxujh4">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${original==false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Urednik_downloaduje_i_cita_rad" name="Urednik downloaduje i cita rad" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="naslov_knjige_download" label="Title" type="string" defaultValue="${naslov}" />
+          <camunda:formField id="pisac_username_download" label="Username" type="string" defaultValue="${pisac_username}" />
+          <camunda:formField id="download" label="Download" type="string" defaultValue="${naslov}">
+            <camunda:properties>
+              <camunda:property id="fieldType" value="button" />
+            </camunda:properties>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1qj1yhx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0xu8zbi</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0xu8zbi" sourceRef="Urednik_downloaduje_i_cita_rad" targetRef="urednik_prihvata_ili_odbija_rukopis" />
+    <bpmn:userTask id="urednik_prihvata_ili_odbija_rukopis" name="Urednik prihvata ili odbija rukopis" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="naslovKnjige" label="Title" type="string" defaultValue="${naslov}" />
+          <camunda:formField id="prihvataSe" label="Do you accept book?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0xu8zbi</bpmn:incoming>
+      <bpmn:outgoing>Flow_1d8b6c6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="Activity_0sxujh4" name="Knjiga nije original" camunda:class="com.LiteraryAssociation.handler.SendEmailForBookTermination">
+      <bpmn:incoming>Flow_05hm79v</bpmn:incoming>
+      <bpmn:outgoing>Flow_0gyzb02</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sendTask id="Activity_0gft5kj" name="Nije poslat rukopis" camunda:class="com.LiteraryAssociation.handler.SendEmailForBookTermination">
+      <bpmn:incoming>Flow_10oaku3</bpmn:incoming>
+      <bpmn:outgoing>Flow_01s3u0c</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sendTask id="odbijanje_rada" name="Pisac se notificira" camunda:class="com.LiteraryAssociation.handler.SendEmailForDecline">
+      <bpmn:incoming>Flow_0rj3puv</bpmn:incoming>
+      <bpmn:outgoing>Flow_1hxsjvq</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="Flow_1d8b6c6" sourceRef="urednik_prihvata_ili_odbija_rukopis" targetRef="prihvatanje_odbijanje_rukopisa" />
+    <bpmn:serviceTask id="prihvatanje_odbijanje_rukopisa" name="Prihvatanje i odbijanje rukopisa" camunda:class="com.LiteraryAssociation.handler.AcceptAndRejectBook">
+      <bpmn:incoming>Flow_1d8b6c6</bpmn:incoming>
+      <bpmn:outgoing>Flow_07z8ajw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1foffiw">
+      <bpmn:incoming>Flow_07z8ajw</bpmn:incoming>
+      <bpmn:outgoing>Flow_08qgu5y</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1w0bfln</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_07z8ajw" sourceRef="prihvatanje_odbijanje_rukopisa" targetRef="Gateway_1foffiw" />
+    <bpmn:sequenceFlow id="Flow_08qgu5y" name="Prihvacen" sourceRef="Gateway_1foffiw" targetRef="Urednik_bira_da_li_ce_da_posalje_beta_citaocima">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${prihvacenRukopis==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1w0bfln" name="Odbijen" sourceRef="Gateway_1foffiw" targetRef="Rukopis_odbijen">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${prihvacenRukopis==false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sendTask id="Rukopis_odbijen" name="Rukopis odbijen" camunda:class="com.LiteraryAssociation.handler.SendEmailForBookTermination">
+      <bpmn:incoming>Flow_1w0bfln</bpmn:incoming>
+      <bpmn:outgoing>Flow_1n8ky1v</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="Urednik_bira_da_li_ce_da_posalje_beta_citaocima" name="Urednik bira da li ce da posalje rukopis beta citaocima" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="naslovKnjige" label="Title" type="string" defaultValue="${naslov}" />
+          <camunda:formField id="saljeSe" label="Do you want to send the book to beta-readers?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_08qgu5y</bpmn:incoming>
+      <bpmn:outgoing>Flow_0sjt3ml</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0sjt3ml" sourceRef="Urednik_bira_da_li_ce_da_posalje_beta_citaocima" targetRef="Activity_0uwy10p" />
+    <bpmn:serviceTask id="Activity_0uwy10p" name="Belezenje odluke" camunda:class="com.LiteraryAssociation.handler.SendToBetaReaders">
+      <bpmn:incoming>Flow_0sjt3ml</bpmn:incoming>
+      <bpmn:outgoing>Flow_1jxvo8d</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1v551wr">
+      <bpmn:incoming>Flow_1jxvo8d</bpmn:incoming>
+      <bpmn:outgoing>Flow_00k7vhx</bpmn:outgoing>
+      <bpmn:outgoing>Flow_16dwi5d</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1jxvo8d" sourceRef="Activity_0uwy10p" targetRef="Gateway_1v551wr" />
+    <bpmn:sequenceFlow id="Flow_00k7vhx" name="Salje se" sourceRef="Gateway_1v551wr" targetRef="urednik_bira_beta_citaoce">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${saljeSeBetaCitaocima==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_16dwi5d" name="Ne salje se" sourceRef="Gateway_1v551wr" targetRef="Activity_1l4p317">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${saljeSeBetaCitaocima==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1iph92g" sourceRef="urednik_bira_beta_citaoce" targetRef="Activity_0p5tkhy" />
+    <bpmn:sendTask id="Activity_1l4p317" name="Nije poslato" camunda:class="com.LiteraryAssociation.handler.SendEmailForBookTermination">
+      <bpmn:incoming>Flow_16dwi5d</bpmn:incoming>
+      <bpmn:outgoing>Flow_0g4dqds</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="urednik_bira_beta_citaoce" name="Urednik bira beta citaoce" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="betaReaders" label="Beta Readers" type="enum" />
+        </camunda:formData>
+        <camunda:executionListener class="com.LiteraryAssociation.handler.SaveBetaReaders" event="end" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_00k7vhx</bpmn:incoming>
+      <bpmn:outgoing>Flow_1iph92g</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_084f9xs" sourceRef="Activity_0p5tkhy" targetRef="pisac_menja_rukopis_ukoliko_je_potrebno" />
+    <bpmn:subProcess id="Activity_0p5tkhy" name="Beta citaoc ostavlja komentar">
+      <bpmn:incoming>Flow_1iph92g</bpmn:incoming>
+      <bpmn:outgoing>Flow_084f9xs</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics camunda:collection="${betaReaders}" camunda:elementVariable="betaReader" />
+      <bpmn:startEvent id="Event_1rplsm7">
+        <bpmn:outgoing>Flow_0sw7n5a</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_0sw7n5a" sourceRef="Event_1rplsm7" targetRef="Beta_citaoc_ostavlja_svoj_komentar" />
+      <bpmn:userTask id="Beta_citaoc_ostavlja_svoj_komentar" name="Beta citaoc ostavlja svoj komentar" camunda:assignee="${betaReader}">
+        <bpmn:extensionElements>
+          <camunda:formData>
+            <camunda:formField id="komentar" label="Comment" type="string">
+              <camunda:properties>
+                <camunda:property id="valueType" value="text" />
+              </camunda:properties>
+            </camunda:formField>
+            <camunda:formField id="knjiga" label="Book" type="string" defaultValue="${naslov}">
+              <camunda:properties>
+                <camunda:property id="valueType" value="defaultValue" />
+              </camunda:properties>
+            </camunda:formField>
+          </camunda:formData>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0sw7n5a</bpmn:incoming>
+        <bpmn:outgoing>Flow_0vodv1v</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:boundaryEvent id="Event_1o0h2fa" attachedToRef="Beta_citaoc_ostavlja_svoj_komentar">
+        <bpmn:outgoing>Flow_1dbcmat</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_19mvacm">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT30S</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_1dbcmat" sourceRef="Event_1o0h2fa" targetRef="Beta_citaoc_dobija_negativan_poen" />
+      <bpmn:exclusiveGateway id="Gateway_0bb3qhw" default="Flow_1uk8wmz">
+        <bpmn:incoming>Flow_0h9wqw1</bpmn:incoming>
+        <bpmn:outgoing>Flow_1uk8wmz</bpmn:outgoing>
+        <bpmn:outgoing>Flow_0kc0hd0</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_1uk8wmz" sourceRef="Gateway_0bb3qhw" targetRef="Event_1q97wi4" />
+      <bpmn:sequenceFlow id="Flow_0kc0hd0" name="ima -5 bodova" sourceRef="Gateway_0bb3qhw" targetRef="Activity_1s4cn1t">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${kazneniBodovi &lt;= -5}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:serviceTask id="Beta_citaoc_dobija_negativan_poen" name="Beta citaoc dobija negativan poen" camunda:class="com.LiteraryAssociation.handler.BetaReaderNegativePoint">
+        <bpmn:incoming>Flow_1dbcmat</bpmn:incoming>
+        <bpmn:outgoing>Flow_07ogjs1</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="Activity_1s4cn1t" name="Beta citaoc gubi svoj status" camunda:class="com.LiteraryAssociation.handler.BetaReaderLoseStatus">
+        <bpmn:incoming>Flow_0kc0hd0</bpmn:incoming>
+        <bpmn:outgoing>Flow_14s090j</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_14s090j" sourceRef="Activity_1s4cn1t" targetRef="Event_0n2qp5t" />
+      <bpmn:endEvent id="Event_0n2qp5t">
+        <bpmn:incoming>Flow_14s090j</bpmn:incoming>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_18nqo3l" camunda:class="com.LiteraryAssociation.handler.SendNotification" />
+      </bpmn:endEvent>
+      <bpmn:endEvent id="Event_1q97wi4">
+        <bpmn:incoming>Flow_1uk8wmz</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0vodv1v" sourceRef="Beta_citaoc_ostavlja_svoj_komentar" targetRef="Activity_0bi8058" />
+      <bpmn:endEvent id="Event_0nv0nlp">
+        <bpmn:incoming>Flow_15vc728</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_15vc728" sourceRef="Activity_0bi8058" targetRef="Event_0nv0nlp" />
+      <bpmn:sendTask id="Activity_0bi8058" name="Komentari se salju piscu" camunda:class="com.LiteraryAssociation.handler.BetaReaderAddComment">
+        <bpmn:incoming>Flow_0vodv1v</bpmn:incoming>
+        <bpmn:outgoing>Flow_15vc728</bpmn:outgoing>
+      </bpmn:sendTask>
+      <bpmn:sequenceFlow id="Flow_07ogjs1" sourceRef="Beta_citaoc_dobija_negativan_poen" targetRef="Event_06avtmy" />
+      <bpmn:sequenceFlow id="Flow_0h9wqw1" sourceRef="Event_06avtmy" targetRef="Gateway_0bb3qhw" />
+      <bpmn:intermediateThrowEvent id="Event_06avtmy" name="Obavestenje beta citaocu">
+        <bpmn:incoming>Flow_07ogjs1</bpmn:incoming>
+        <bpmn:outgoing>Flow_0h9wqw1</bpmn:outgoing>
+        <bpmn:escalationEventDefinition id="EscalationEventDefinition_161vvfh" escalationRef="Escalation_1wibkfo" />
+      </bpmn:intermediateThrowEvent>
+    </bpmn:subProcess>
+    <bpmn:userTask id="pisac_menja_rukopis_ukoliko_je_potrebno" name="Pisac menja rukopis ukoliko je potrebno" camunda:assignee="${writerId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="pdfs" type="file">
+            <camunda:properties>
+              <camunda:property id="input" value="file" />
+            </camunda:properties>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_084f9xs</bpmn:incoming>
+      <bpmn:incoming>urednik_odlucio_da_treba_jos_izmena</bpmn:incoming>
+      <bpmn:incoming>lektor_odlucio_da_treba_jos_izmena</bpmn:incoming>
+      <bpmn:incoming>glavni_urednik_odlucio_da_treba_jos_izmena</bpmn:incoming>
+      <bpmn:outgoing>Flow_1a8336m</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0cto1go" sourceRef="slanje_email_notifikacije_uredniku" targetRef="urednik_pregleda_knjigu" />
+    <bpmn:intermediateThrowEvent id="slanje_email_notifikacije_uredniku" name="Slanje email notifikacije uredniku">
+      <bpmn:incoming>Flow_0cztwwx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cto1go</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1jb04hl" camunda:class="com.LiteraryAssociation.handler.SendEmailToEditor" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_0lb3y2r" sourceRef="slanje_email_notifikacije_piscu" targetRef="pisac_salje_rukopis" />
+    <bpmn:intermediateThrowEvent id="slanje_email_notifikacije_piscu" name="Slanje email notifikacije piscu">
+      <bpmn:incoming>Flow_0zmtis7</bpmn:incoming>
+      <bpmn:outgoing>Flow_0lb3y2r</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1pows8k" camunda:class="com.LiteraryAssociation.handler.SendEmailForAccept" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:exclusiveGateway id="Gateway_1w8m8o6">
+      <bpmn:incoming>Flow_0gyzb02</bpmn:incoming>
+      <bpmn:incoming>Flow_01s3u0c</bpmn:incoming>
+      <bpmn:incoming>Flow_1hxsjvq</bpmn:incoming>
+      <bpmn:incoming>Flow_1n8ky1v</bpmn:incoming>
+      <bpmn:incoming>Flow_0g4dqds</bpmn:incoming>
+      <bpmn:outgoing>Flow_0lwjden</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0gyzb02" sourceRef="Activity_0sxujh4" targetRef="Gateway_1w8m8o6" />
+    <bpmn:sequenceFlow id="Flow_01s3u0c" sourceRef="Activity_0gft5kj" targetRef="Gateway_1w8m8o6" />
+    <bpmn:sequenceFlow id="Flow_1hxsjvq" sourceRef="odbijanje_rada" targetRef="Gateway_1w8m8o6" />
+    <bpmn:sequenceFlow id="Flow_1n8ky1v" sourceRef="Rukopis_odbijen" targetRef="Gateway_1w8m8o6" />
+    <bpmn:sequenceFlow id="Flow_0g4dqds" sourceRef="Activity_1l4p317" targetRef="Gateway_1w8m8o6" />
+    <bpmn:sequenceFlow id="Flow_0lwjden" sourceRef="Gateway_1w8m8o6" targetRef="Event_12c8ahu" />
+    <bpmn:exclusiveGateway id="Gateway_01am4si" default="Flow_1xmrg91">
+      <bpmn:incoming>Flow_1a8336m</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ij1swq</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1xmrg91</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1a8336m" sourceRef="pisac_menja_rukopis_ukoliko_je_potrebno" targetRef="Gateway_01am4si" />
+    <bpmn:sequenceFlow id="Flow_1ij1swq" sourceRef="Gateway_01am4si" targetRef="slanje_nove_verzije_rukopisa">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${izmeneUradjenje==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="slanje_nove_verzije_rukopisa" name="Slanje nove verzije rukopisa" camunda:class="com.LiteraryAssociation.handler.SendingManuscript">
+      <bpmn:incoming>Flow_1ij1swq</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rp5sd8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1rp5sd8" sourceRef="slanje_nove_verzije_rukopisa" targetRef="urednik_odlucuje_da_li_treba_jos_izmena" />
+    <bpmn:userTask id="urednik_odlucuje_da_li_treba_jos_izmena" name="Urednik odlucuje da li treba jos izmena" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="knjiga" label="Book" type="string" defaultValue="${naslov}">
+            <camunda:properties>
+              <camunda:property id="valueType" value="defaultValue" />
+            </camunda:properties>
+          </camunda:formField>
+          <camunda:formField id="izmene" label="Is necessary more changes?" type="boolean" />
+        </camunda:formData>
+        <camunda:executionListener class="com.LiteraryAssociation.handler.NeedMoreChanges" event="end" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1rp5sd8</bpmn:incoming>
+      <bpmn:outgoing>Flow_1jjll69</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_1wvma3k" default="urednik_odlucio_da_treba_jos_izmena">
+      <bpmn:incoming>Flow_1jjll69</bpmn:incoming>
+      <bpmn:incoming>Flow_1xmrg91</bpmn:incoming>
+      <bpmn:outgoing>urednik_odlucio_da_treba_jos_izmena</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0wexjy5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1jjll69" sourceRef="urednik_odlucuje_da_li_treba_jos_izmena" targetRef="Gateway_1wvma3k" />
+    <bpmn:sequenceFlow id="Flow_1xmrg91" name="pisac nije podneo izmene" sourceRef="Gateway_01am4si" targetRef="Gateway_1wvma3k" />
+    <bpmn:sequenceFlow id="urednik_odlucio_da_treba_jos_izmena" name="urednik odlucio da treba jos izmena" sourceRef="Gateway_1wvma3k" targetRef="pisac_menja_rukopis_ukoliko_je_potrebno" />
+    <bpmn:serviceTask id="slanje_rukopisa_lektoru" name="Slanje rukopisa lektoru" camunda:class="com.LiteraryAssociation.handler.SendingManuscript">
+      <bpmn:incoming>Flow_0wexjy5</bpmn:incoming>
+      <bpmn:outgoing>Flow_0bzrhjq</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0bzrhjq" sourceRef="slanje_rukopisa_lektoru" targetRef="lektor_skida_rukopis_i_belezi_greske" />
+    <bpmn:userTask id="lektor_skida_rukopis_i_belezi_greske" name="Lektor skida rukopis i belezi greske" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="knjiga" label="Book" type="string" defaultValue="${naslov}">
+            <camunda:properties>
+              <camunda:property id="valueType" value="defaultValue" />
+            </camunda:properties>
+          </camunda:formField>
+          <camunda:formField id="errors" label="Error of book" type="string" />
+          <camunda:formField id="download" label="Download" type="string" defaultValue="${naslov}">
+            <camunda:properties>
+              <camunda:property id="fieldType" value="button" />
+            </camunda:properties>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0bzrhjq</bpmn:incoming>
+      <bpmn:outgoing>Flow_037ac7v</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_037ac7v" sourceRef="lektor_skida_rukopis_i_belezi_greske" targetRef="prosledjivanje_gresaka_piscu" />
+    <bpmn:serviceTask id="prosledjivanje_gresaka_piscu" name="Prosledjivanje gresaka piscu" camunda:class="com.LiteraryAssociation.handler.SendErrorsToWriter">
+      <bpmn:incoming>Flow_037ac7v</bpmn:incoming>
+      <bpmn:outgoing>Flow_1gnsb6c</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1gnsb6c" sourceRef="prosledjivanje_gresaka_piscu" targetRef="rukopis_prolazi_lektorsku_kontrolu" />
+    <bpmn:exclusiveGateway id="Gateway_05iwfe9" default="lektor_odlucio_da_treba_jos_izmena">
+      <bpmn:incoming>Flow_1rwsk9c</bpmn:incoming>
+      <bpmn:outgoing>Flow_0miwp6z</bpmn:outgoing>
+      <bpmn:outgoing>lektor_odlucio_da_treba_jos_izmena</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0miwp6z" sourceRef="Gateway_05iwfe9" targetRef="ceka_se_odobrenje_glavnog_urednika">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${potrebeIzmene==false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="lektor_odlucio_da_treba_jos_izmena" name="lektor odlucio da treba jos izmena" sourceRef="Gateway_05iwfe9" targetRef="pisac_menja_rukopis_ukoliko_je_potrebno" />
+    <bpmn:exclusiveGateway id="Gateway_0ko4gcy" default="glavni_urednik_odlucio_da_treba_jos_izmena">
+      <bpmn:incoming>Flow_1mrcjuu</bpmn:incoming>
+      <bpmn:outgoing>Flow_14vg4rm</bpmn:outgoing>
+      <bpmn:outgoing>glavni_urednik_odlucio_da_treba_jos_izmena</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1mrcjuu" sourceRef="ceka_se_odobrenje_glavnog_urednika" targetRef="Gateway_0ko4gcy" />
+    <bpmn:sequenceFlow id="Flow_14vg4rm" sourceRef="Gateway_0ko4gcy" targetRef="stampa">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${odobreno==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="glavni_urednik_odlucio_da_treba_jos_izmena" name="glavni urednik odlucio da treba jos izmena" sourceRef="Gateway_0ko4gcy" targetRef="pisac_menja_rukopis_ukoliko_je_potrebno" />
+    <bpmn:serviceTask id="stampa" name="Slanje knjige na stampu i indeksiranje u online repozitorijumu" camunda:class="com.LiteraryAssociation.handler.PrintBook">
+      <bpmn:incoming>Flow_14vg4rm</bpmn:incoming>
+      <bpmn:outgoing>Flow_13eubj9</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_1xxmw8q">
+      <bpmn:incoming>Flow_13eubj9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_13eubj9" sourceRef="stampa" targetRef="Event_1xxmw8q" />
+    <bpmn:sequenceFlow id="Flow_0wexjy5" sourceRef="Gateway_1wvma3k" targetRef="slanje_rukopisa_lektoru">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${potrebeIzmene==false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="rukopis_prolazi_lektorsku_kontrolu" name="Rukopis prolazi lektorsku kontrolu" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="knjiga" label="Book" type="string" defaultValue="${naslov}">
+            <camunda:properties>
+              <camunda:property id="valueType" value="defaultValue" />
+            </camunda:properties>
+          </camunda:formField>
+          <camunda:formField id="izmene" label="Is necessary more changes?" type="boolean" />
+        </camunda:formData>
+        <camunda:executionListener class="com.LiteraryAssociation.handler.NeedMoreChanges" event="end" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1gnsb6c</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rwsk9c</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1rwsk9c" sourceRef="rukopis_prolazi_lektorsku_kontrolu" targetRef="Gateway_05iwfe9" />
+    <bpmn:userTask id="ceka_se_odobrenje_glavnog_urednika" name="Glavni urednik odobrava rukopis" camunda:assignee="${editorId}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="knjiga" label="Book" type="string" defaultValue="${naslov}">
+            <camunda:properties>
+              <camunda:property id="valueType" value="defaultValue" />
+            </camunda:properties>
+          </camunda:formField>
+          <camunda:formField id="odobrenje" label="Do you approve manuscript?" type="boolean" />
+        </camunda:formData>
+        <camunda:taskListener class="" event="complete" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0miwp6z</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mrcjuu</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_12c8ahu">
+      <bpmn:incoming>Flow_0lwjden</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_0f7gulp" />
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="Event_1nsuesu" name="Obavestenje beta citaocu" cancelActivity="false" attachedToRef="Activity_0p5tkhy">
+      <bpmn:outgoing>Flow_07il2gj</bpmn:outgoing>
+      <bpmn:escalationEventDefinition id="EscalationEventDefinition_0aspc3c" escalationRef="Escalation_1wibkfo" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_07il2gj" sourceRef="Event_1nsuesu" targetRef="Activity_0490ht2" />
+    <bpmn:endEvent id="Event_1hu345f">
+      <bpmn:incoming>Flow_0mqo73e</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0mqo73e" sourceRef="Activity_0490ht2" targetRef="Event_1hu345f" />
+    <bpmn:serviceTask id="Activity_0490ht2" name="Obavestenje beta citaocu za negativan poen" camunda:class="com.LiteraryAssociation.handler.SendNotification">
+      <bpmn:incoming>Flow_07il2gj</bpmn:incoming>
+      <bpmn:outgoing>Flow_0mqo73e</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:subProcess id="Activity_09vyzsx" name="Ceo proces je ogranicen na 30 dana" triggeredByEvent="true">
+      <bpmn:endEvent id="Event_0y8hk7l">
+        <bpmn:incoming>Flow_1gfy2dt</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:startEvent id="Event_1mxl6dt" name="30 dana">
+        <bpmn:outgoing>Flow_1gfy2dt</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_1tdeg2t">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P30D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_1gfy2dt" sourceRef="Event_1mxl6dt" targetRef="Event_0y8hk7l" />
+    </bpmn:subProcess>
+    <bpmn:textAnnotation id="TextAnnotation_0eov8ir">
+      <bpmn:text>Sistem treba automatski da ponudi listu beta-citaoca koji su izrazili zainteresovanost za zanr rukopisa.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_05o7mdy" sourceRef="urednik_bira_beta_citaoce" targetRef="TextAnnotation_0eov8ir" />
+  </bpmn:process>
+  <bpmn:error id="Error_0fhfkbi" name="book_already_exists" errorCode="500" camunda:errorMessage="book_already_exists" />
+  <bpmn:error id="Error_0vr2r5e" name="Error_35a3qus" />
+  <bpmn:escalation id="Escalation_1wibkfo" name="Escalation_07nd0fi" escalationCode="escalation_code" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="izdavanje_knjige">
+      <bpmndi:BPMNEdge id="Flow_0mqo73e_di" bpmnElement="Flow_0mqo73e">
+        <di:waypoint x="3450" y="1080" />
+        <di:waypoint x="3502" y="1080" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07il2gj_di" bpmnElement="Flow_07il2gj">
+        <di:waypoint x="3300" y="968" />
+        <di:waypoint x="3300" y="1080" />
+        <di:waypoint x="3350" y="1080" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rwsk9c_di" bpmnElement="Flow_1rwsk9c">
+        <di:waypoint x="4900" y="760" />
+        <di:waypoint x="4965" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0wexjy5_di" bpmnElement="Flow_0wexjy5">
+        <di:waypoint x="4265" y="760" />
+        <di:waypoint x="4320" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13eubj9_di" bpmnElement="Flow_13eubj9">
+        <di:waypoint x="5380" y="610" />
+        <di:waypoint x="5462" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1yqscln_di" bpmnElement="glavni_urednik_odlucio_da_treba_jos_izmena">
+        <di:waypoint x="5170" y="635" />
+        <di:waypoint x="5170" y="1030" />
+        <di:waypoint x="3680" y="1030" />
+        <di:waypoint x="3680" y="800" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4399" y="980" width="79" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14vg4rm_di" bpmnElement="Flow_14vg4rm">
+        <di:waypoint x="5195" y="610" />
+        <di:waypoint x="5280" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mrcjuu_di" bpmnElement="Flow_1mrcjuu">
+        <di:waypoint x="5040" y="610" />
+        <di:waypoint x="5145" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1setz96_di" bpmnElement="lektor_odlucio_da_treba_jos_izmena">
+        <di:waypoint x="4990" y="785" />
+        <di:waypoint x="4990" y="960" />
+        <di:waypoint x="3720" y="960" />
+        <di:waypoint x="3720" y="800" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4315" y="916" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0miwp6z_di" bpmnElement="Flow_0miwp6z">
+        <di:waypoint x="4990" y="735" />
+        <di:waypoint x="4990" y="650" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gnsb6c_di" bpmnElement="Flow_1gnsb6c">
+        <di:waypoint x="4740" y="760" />
+        <di:waypoint x="4800" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_037ac7v_di" bpmnElement="Flow_037ac7v">
+        <di:waypoint x="4580" y="760" />
+        <di:waypoint x="4640" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bzrhjq_di" bpmnElement="Flow_0bzrhjq">
+        <di:waypoint x="4420" y="760" />
+        <di:waypoint x="4480" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c3usya_di" bpmnElement="urednik_odlucio_da_treba_jos_izmena">
+        <di:waypoint x="4240" y="785" />
+        <di:waypoint x="4240" y="910" />
+        <di:waypoint x="3750" y="910" />
+        <di:waypoint x="3750" y="800" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3950" y="876" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xmrg91_di" bpmnElement="Flow_1xmrg91">
+        <di:waypoint x="3840" y="735" />
+        <di:waypoint x="3840" y="610" />
+        <di:waypoint x="4240" y="610" />
+        <di:waypoint x="4240" y="735" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3967" y="576" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1jjll69_di" bpmnElement="Flow_1jjll69">
+        <di:waypoint x="4160" y="760" />
+        <di:waypoint x="4215" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rp5sd8_di" bpmnElement="Flow_1rp5sd8">
+        <di:waypoint x="4010" y="760" />
+        <di:waypoint x="4060" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ij1swq_di" bpmnElement="Flow_1ij1swq">
+        <di:waypoint x="3865" y="760" />
+        <di:waypoint x="3910" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1a8336m_di" bpmnElement="Flow_1a8336m">
+        <di:waypoint x="3770" y="760" />
+        <di:waypoint x="3815" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lwjden_di" bpmnElement="Flow_0lwjden">
+        <di:waypoint x="1700" y="915" />
+        <di:waypoint x="1700" y="992" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0g4dqds_di" bpmnElement="Flow_0g4dqds">
+        <di:waypoint x="2420" y="780" />
+        <di:waypoint x="2420" y="910" />
+        <di:waypoint x="1705" y="910" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n8ky1v_di" bpmnElement="Flow_1n8ky1v">
+        <di:waypoint x="1910" y="720" />
+        <di:waypoint x="1910" y="890" />
+        <di:waypoint x="1725" y="890" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hxsjvq_di" bpmnElement="Flow_1hxsjvq">
+        <di:waypoint x="1060" y="1000" />
+        <di:waypoint x="1570" y="1000" />
+        <di:waypoint x="1686" y="901" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01s3u0c_di" bpmnElement="Flow_01s3u0c">
+        <di:waypoint x="1390" y="890" />
+        <di:waypoint x="1675" y="890" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gyzb02_di" bpmnElement="Flow_0gyzb02">
+        <di:waypoint x="1700" y="690" />
+        <di:waypoint x="1700" y="865" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lb3y2r_di" bpmnElement="Flow_0lb3y2r">
+        <di:waypoint x="1178" y="747" />
+        <di:waypoint x="1280" y="747" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cto1go_di" bpmnElement="Flow_0cto1go">
+        <di:waypoint x="768" y="747" />
+        <di:waypoint x="840" y="747" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_084f9xs_di" bpmnElement="Flow_084f9xs">
+        <di:waypoint x="3630" y="760" />
+        <di:waypoint x="3670" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1iph92g_di" bpmnElement="Flow_1iph92g">
+        <di:waypoint x="2610" y="610" />
+        <di:waypoint x="2790" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16dwi5d_di" bpmnElement="Flow_16dwi5d">
+        <di:waypoint x="2420" y="635" />
+        <di:waypoint x="2420" y="700" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2432" y="663" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00k7vhx_di" bpmnElement="Flow_00k7vhx">
+        <di:waypoint x="2445" y="610" />
+        <di:waypoint x="2510" y="610" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2458" y="592" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1jxvo8d_di" bpmnElement="Flow_1jxvo8d">
+        <di:waypoint x="2330" y="610" />
+        <di:waypoint x="2395" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0sjt3ml_di" bpmnElement="Flow_0sjt3ml">
+        <di:waypoint x="2090" y="480" />
+        <di:waypoint x="2090" y="610" />
+        <di:waypoint x="2230" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1w0bfln_di" bpmnElement="Flow_1w0bfln">
+        <di:waypoint x="1920" y="465" />
+        <di:waypoint x="1920" y="640" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1931" y="553" width="38" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08qgu5y_di" bpmnElement="Flow_08qgu5y">
+        <di:waypoint x="1945" y="440" />
+        <di:waypoint x="2040" y="440" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1965" y="423" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07z8ajw_di" bpmnElement="Flow_07z8ajw">
+        <di:waypoint x="1750" y="120" />
+        <di:waypoint x="1920" y="120" />
+        <di:waypoint x="1920" y="415" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d8b6c6_di" bpmnElement="Flow_1d8b6c6">
+        <di:waypoint x="1700" y="190" />
+        <di:waypoint x="1700" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xu8zbi_di" bpmnElement="Flow_0xu8zbi">
+        <di:waypoint x="1700" y="310" />
+        <di:waypoint x="1700" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05hm79v_di" bpmnElement="Flow_05hm79v">
+        <di:waypoint x="1700" y="506" />
+        <di:waypoint x="1700" y="610" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1701" y="563" width="58" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qj1yhx_di" bpmnElement="Flow_1qj1yhx">
+        <di:waypoint x="1700" y="456" />
+        <di:waypoint x="1700" y="390" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1711" y="423" width="38" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fpi2se_di" bpmnElement="Flow_0fpi2se">
+        <di:waypoint x="1390" y="481" />
+        <di:waypoint x="1675" y="481" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ea9nt6_di" bpmnElement="Flow_0ea9nt6">
+        <di:waypoint x="1340" y="570" />
+        <di:waypoint x="1340" y="521" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1j8162u_di" bpmnElement="Flow_1j8162u">
+        <di:waypoint x="500" y="805" />
+        <di:waypoint x="500" y="840" />
+        <di:waypoint x="310" y="840" />
+        <di:waypoint x="310" y="787" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="365" y="806" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10oaku3_di" bpmnElement="Flow_10oaku3">
+        <di:waypoint x="1340" y="805" />
+        <di:waypoint x="1340" y="850" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0x8meo5_di" bpmnElement="Flow_0x8meo5">
+        <di:waypoint x="1340" y="707" />
+        <di:waypoint x="1340" y="650" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rj3puv_di" bpmnElement="Flow_0rj3puv">
+        <di:waypoint x="1010" y="772" />
+        <di:waypoint x="1010" y="960" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1020" y="848" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zmtis7_di" bpmnElement="Flow_0zmtis7">
+        <di:waypoint x="1035" y="747" />
+        <di:waypoint x="1142" y="747" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1033" y="716" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zgayvx_di" bpmnElement="Flow_0zgayvx">
+        <di:waypoint x="940" y="747" />
+        <di:waypoint x="985" y="747" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cztwwx_di" bpmnElement="Flow_0cztwwx">
+        <di:waypoint x="680" y="747" />
+        <di:waypoint x="732" y="747" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1dsb3n1_di" bpmnElement="Flow_1dsb3n1">
+        <di:waypoint x="540" y="747" />
+        <di:waypoint x="580" y="747" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mv59p1_di" bpmnElement="Flow_1mv59p1">
+        <di:waypoint x="360" y="747" />
+        <di:waypoint x="440" y="747" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14viqcd_di" bpmnElement="Flow_14viqcd">
+        <di:waypoint x="188" y="747" />
+        <di:waypoint x="260" y="747" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="729" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_19111ve_di" bpmnElement="pisac_unosi_podatke_o_knjizi">
+        <dc:Bounds x="260" y="707" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1c0x3cd_di" bpmnElement="prijava_knjige_u_sistem">
+        <dc:Bounds x="440" y="707" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_08h08df_di" bpmnElement="urednik_pregleda_knjigu">
+        <dc:Bounds x="840" y="707" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_114u1vt_di" bpmnElement="odabir_glavnog_urednika">
+        <dc:Bounds x="580" y="707" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1m288lv_di" bpmnElement="Gateway_1m288lv" isMarkerVisible="true">
+        <dc:Bounds x="985" y="722" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0o0jgx2_di" bpmnElement="pisac_salje_rukopis">
+        <dc:Bounds x="1280" y="707" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_13q7xhq_di" bpmnElement="Radna_verzija_se_deponuje_u_sistem_za_plagijarizam">
+        <dc:Bounds x="1280" y="570" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1q7rs28_di" bpmnElement="Urednik_odlucuje_da_li_je_delo_originalno">
+        <dc:Bounds x="1290" y="441" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1lwuxw1_di" bpmnElement="Gateway_1lwuxw1" isMarkerVisible="true">
+        <dc:Bounds x="1675" y="456" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1970" y="233" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0h2d26z_di" bpmnElement="Urednik_downloaduje_i_cita_rad">
+        <dc:Bounds x="1650" y="310" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0az6kb2_di" bpmnElement="urednik_prihvata_ili_odbija_rukopis">
+        <dc:Bounds x="1650" y="190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1v0rnwo_di" bpmnElement="Activity_0sxujh4">
+        <dc:Bounds x="1650" y="610" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_15t9vf0_di" bpmnElement="Activity_0gft5kj">
+        <dc:Bounds x="1290" y="850" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0hd28of_di" bpmnElement="odbijanje_rada">
+        <dc:Bounds x="960" y="960" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1lnjxoi_di" bpmnElement="prihvatanje_odbijanje_rukopisa">
+        <dc:Bounds x="1650" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1foffiw_di" bpmnElement="Gateway_1foffiw" isMarkerVisible="true">
+        <dc:Bounds x="1895" y="415" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_16l23jc_di" bpmnElement="Rukopis_odbijen">
+        <dc:Bounds x="1860" y="640" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0hq2qdi_di" bpmnElement="Urednik_bira_da_li_ce_da_posalje_beta_citaocima">
+        <dc:Bounds x="2040" y="400" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_050d386_di" bpmnElement="Activity_0uwy10p">
+        <dc:Bounds x="2230" y="570" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1v551wr_di" bpmnElement="Gateway_1v551wr" isMarkerVisible="true">
+        <dc:Bounds x="2395" y="585" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1l6hdj2_di" bpmnElement="Activity_1l4p317">
+        <dc:Bounds x="2370" y="700" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1dxub4k_di" bpmnElement="urednik_bira_beta_citaoce">
+        <dc:Bounds x="2510" y="570" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0klxk10_di" bpmnElement="Activity_0p5tkhy" isExpanded="true">
+        <dc:Bounds x="2790" y="500" width="840" height="450" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0h9wqw1_di" bpmnElement="Flow_0h9wqw1">
+        <di:waypoint x="3178" y="740" />
+        <di:waypoint x="3235" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07ogjs1_di" bpmnElement="Flow_07ogjs1">
+        <di:waypoint x="3100" y="740" />
+        <di:waypoint x="3142" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15vc728_di" bpmnElement="Flow_15vc728">
+        <di:waypoint x="3210" y="600" />
+        <di:waypoint x="3302" y="600" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vodv1v_di" bpmnElement="Flow_0vodv1v">
+        <di:waypoint x="3010" y="600" />
+        <di:waypoint x="3110" y="600" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14s090j_di" bpmnElement="Flow_14s090j">
+        <di:waypoint x="3450" y="850" />
+        <di:waypoint x="3522" y="850" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kc0hd0_di" bpmnElement="Flow_0kc0hd0">
+        <di:waypoint x="3260" y="765" />
+        <di:waypoint x="3260" y="850" />
+        <di:waypoint x="3350" y="850" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3265" y="805" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1uk8wmz_di" bpmnElement="Flow_1uk8wmz">
+        <di:waypoint x="3285" y="740" />
+        <di:waypoint x="3342" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1dbcmat_di" bpmnElement="Flow_1dbcmat">
+        <di:waypoint x="2970" y="658" />
+        <di:waypoint x="2970" y="740" />
+        <di:waypoint x="3000" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0sw7n5a_di" bpmnElement="Flow_0sw7n5a">
+        <di:waypoint x="2858" y="600" />
+        <di:waypoint x="2910" y="600" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1rplsm7_di" bpmnElement="Event_1rplsm7">
+        <dc:Bounds x="2822" y="582" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gu9mgq_di" bpmnElement="Beta_citaoc_ostavlja_svoj_komentar">
+        <dc:Bounds x="2910" y="560" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0bb3qhw_di" bpmnElement="Gateway_0bb3qhw" isMarkerVisible="true">
+        <dc:Bounds x="3235" y="715" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10nyef1_di" bpmnElement="Beta_citaoc_dobija_negativan_poen">
+        <dc:Bounds x="3000" y="700" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1dhbe08_di" bpmnElement="Activity_1s4cn1t">
+        <dc:Bounds x="3350" y="810" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1fzotn3_di" bpmnElement="Event_0n2qp5t">
+        <dc:Bounds x="3522" y="832" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1q97wi4_di" bpmnElement="Event_1q97wi4">
+        <dc:Bounds x="3342" y="722" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0nv0nlp_di" bpmnElement="Event_0nv0nlp">
+        <dc:Bounds x="3302" y="582" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1cclq8f_di" bpmnElement="Activity_0bi8058">
+        <dc:Bounds x="3110" y="560" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1lb926u_di" bpmnElement="Event_06avtmy">
+        <dc:Bounds x="3142" y="722" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3119" y="765" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ajzkdp_di" bpmnElement="Event_1o0h2fa">
+        <dc:Bounds x="2952" y="622" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0x0ijj3_di" bpmnElement="pisac_menja_rukopis_ukoliko_je_potrebno">
+        <dc:Bounds x="3670" y="720" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11l0vh6_di" bpmnElement="slanje_email_notifikacije_uredniku">
+        <dc:Bounds x="732" y="729" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="720" y="772" width="60" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1yoswk7_di" bpmnElement="slanje_email_notifikacije_piscu">
+        <dc:Bounds x="1142" y="729" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1120" y="772" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1w8m8o6_di" bpmnElement="Gateway_1w8m8o6" isMarkerVisible="true">
+        <dc:Bounds x="1675" y="865" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_01am4si_di" bpmnElement="Gateway_01am4si" isMarkerVisible="true">
+        <dc:Bounds x="3815" y="735" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1wbzhcc_di" bpmnElement="slanje_nove_verzije_rukopisa">
+        <dc:Bounds x="3910" y="720" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1jg7jsj_di" bpmnElement="urednik_odlucuje_da_li_treba_jos_izmena">
+        <dc:Bounds x="4060" y="720" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1wvma3k_di" bpmnElement="Gateway_1wvma3k" isMarkerVisible="true">
+        <dc:Bounds x="4215" y="735" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06uu6u7_di" bpmnElement="slanje_rukopisa_lektoru">
+        <dc:Bounds x="4320" y="720" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0xi360y_di" bpmnElement="lektor_skida_rukopis_i_belezi_greske">
+        <dc:Bounds x="4480" y="720" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0i6vgf8_di" bpmnElement="prosledjivanje_gresaka_piscu">
+        <dc:Bounds x="4640" y="720" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_05iwfe9_di" bpmnElement="Gateway_05iwfe9" isMarkerVisible="true">
+        <dc:Bounds x="4965" y="735" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0ko4gcy_di" bpmnElement="Gateway_0ko4gcy" isMarkerVisible="true">
+        <dc:Bounds x="5145" y="585" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_09bmf66_di" bpmnElement="stampa">
+        <dc:Bounds x="5280" y="570" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1xxmw8q_di" bpmnElement="Event_1xxmw8q">
+        <dc:Bounds x="5462" y="592" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1q3vz4m_di" bpmnElement="rukopis_prolazi_lektorsku_kontrolu">
+        <dc:Bounds x="4800" y="720" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_08kfon9_di" bpmnElement="ceka_se_odobrenje_glavnog_urednika">
+        <dc:Bounds x="4940" y="570" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0xfs7fn_di" bpmnElement="Event_12c8ahu">
+        <dc:Bounds x="1682" y="992" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1hu345f_di" bpmnElement="Event_1hu345f">
+        <dc:Bounds x="3502" y="1062" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qbe9tz_di" bpmnElement="Activity_0490ht2">
+        <dc:Bounds x="3350" y="1040" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_09vyzsx_di" bpmnElement="Activity_09vyzsx" isExpanded="true">
+        <dc:Bounds x="350" y="1090" width="350" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1gfy2dt_di" bpmnElement="Flow_1gfy2dt">
+        <di:waypoint x="438" y="1190" />
+        <di:waypoint x="572" y="1190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0y8hk7l_di" bpmnElement="Event_0y8hk7l">
+        <dc:Bounds x="572" y="1172" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mxl6dt_di" bpmnElement="Event_1mxl6dt">
+        <dc:Bounds x="402" y="1172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="400" y="1215" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0eov8ir_di" bpmnElement="TextAnnotation_0eov8ir">
+        <dc:Bounds x="2590" y="440" width="150" height="82" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_045eanb_di" bpmnElement="Event_1nsuesu">
+        <dc:Bounds x="3282" y="932" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3317" y="986" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0bzcjvo_di" bpmnElement="Event_01e7ya9">
+        <dc:Bounds x="482" y="769" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0vcfg8z_di" bpmnElement="Event_0ur1q17">
+        <dc:Bounds x="1322" y="769" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_05o7mdy_di" bpmnElement="Association_05o7mdy">
+        <di:waypoint x="2573" y="570" />
+        <di:waypoint x="2590" y="517" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

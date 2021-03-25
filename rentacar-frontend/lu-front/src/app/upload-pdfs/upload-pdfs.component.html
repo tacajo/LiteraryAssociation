@@ -1,0 +1,40 @@
+<div class="container">
+    <div *ngIf="this.showForm" class="row">
+      <div *ngFor="let forms of data">
+        <div class="card">
+          <div class="card-body">
+            <div class="form-group">
+  
+              <ul style="padding-left: 20px;">
+                <li class="my-3 sub-text">
+                  Title:
+                  <br />
+                  <strong>
+                    <span>{{ forms.formFields[0].defaultValue }}</span>
+                  </strong>
+                </li>
+                <hr />
+                <li style="height: 70px;" class="my-3 sub-text">
+                  Synopsis:
+                  <br />
+                  <strong>
+                    <span>{{ forms.formFields[1].defaultValue }}</span>
+                  </strong>
+                </li>
+                <hr>
+                <li>
+                    <input style="color: white;"  type="file" id="pdfs" name="files" (change)="selectFiles($event)" multiple><br><br>
+                    <button mat-raised-button color="primary" style="float: right;" (click)="savePdfs(forms.formFields[0].defaultValue)"><strong>submit</strong></button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="!this.showForm" class="info">
+    <h2>There are no accepted books.</h2>
+  </div>
+  

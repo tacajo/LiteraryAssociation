@@ -1,0 +1,21 @@
+<div class="bgImage">
+    <div class="testbox">
+        <h3 align="center" style="margin-top: 30px;font-family: 'Varela Round', sans-serif;">Choose type of payment</h3>
+        <form>
+            <hr>
+            <div class="accounttype">
+                <div *ngFor="let payment of paymentWays">
+                    <input type="radio" value="{{payment.name}}" id="{{payment.name}}" name="paymentway" [(ngModel)]="checked" />
+                    <label for="{{payment.name}}" class="radio">{{payment.name}}</label>
+                </div>
+            </div>
+
+            <hr>
+
+            <a (click)="continueToPayment()" class="button">Continue</a>
+            <br>
+        </form>
+
+    </div>
+
+</div>
